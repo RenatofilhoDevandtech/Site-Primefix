@@ -17,9 +17,16 @@ Este projeto é um clone da interface do Prime Video, desenvolvido como parte de
 
 ![img](https://github.com/RenatofilhoDevandtech/styled/assets/59034938/c25c5e5f-329c-4ae6-9deb-772e9a2bd0db)
 
+## Segue link a Visualização do Projeto
+https://vercel.com/renato-filhos-projects/primeestudo/FnfNDht4SmZfQsJz2zJwrx7Q8bCq
+
 <!-- Ferramentas Utilizadas -->
 ## Ferramentas Utilizadas
 
 - **React.js** - Uma biblioteca JavaScript para criar interfaces de usuário.
 - **Styled Components** - Uma biblioteca para estilizar componentes React com estilos escritos em CSS em linha.
 
+![React](https://img.shields.io/badge/-React-333333?style=flat&logo=react)
+![Git](https://img.shields.io/badge/-Git-333333?style=flat&logo=git)
+![GitHub](https://img.shields.io/badge/-GitHub-333333?style=flat&logo=github)
+![Visual Studio Code](https://img.shields.io/badge/-Visual%20Studio%20Code-333333?style=flat&logo=visual-studio-code&logoColor=007ACC)
