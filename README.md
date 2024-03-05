@@ -18,7 +18,7 @@ Este projeto é um clone da interface do Prime Video, desenvolvido como parte de
 ![img](https://github.com/RenatofilhoDevandtech/styled/assets/59034938/c25c5e5f-329c-4ae6-9deb-772e9a2bd0db)
 
 ## Segue link a Visualização do Projeto
-https://vercel.com/renato-filhos-projects/primeestudo/FnfNDht4SmZfQsJz2zJwrx7Q8bCq
+(https://primeestudo-o30u5zshj-renato-filhos-projects.vercel.app/)
 
 <!-- Ferramentas Utilizadas -->
 ## Ferramentas Utilizadas
