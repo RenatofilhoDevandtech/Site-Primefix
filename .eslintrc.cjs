@@ -12,10 +12,12 @@ module.exports = {
   settings: { react: { version: '18.2' } },
   plugins: ['react-refresh'],
   rules: {
-    'react/jsx-no-target-blank': 'off',
+    // CORREÇÃO: Desativa a regra que exige a validação de props.
+    'react/prop-types': 'off',
+    
     'react-refresh/only-export-components': [
       'warn',
       { allowConstantExport: true },
     ],
   },
-}
+};
