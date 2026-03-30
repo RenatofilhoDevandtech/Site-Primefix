@@ -1,63 +1,54 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useMemo } from 'react';
+import { useNavigate } from 'react-router-dom';
 import HeroCarousel from '../components/features/HeroCarousel';
 import MovieCarousel from '../components/features/MovieCarousel';
 import MovieCard from '../components/ui/MovieCard';
 import Toast from '../components/ui/Toast';
 import Button from '../components/ui/Button';
+import LoadingSpinner from '../components/ui/Spinner';
 import { useMovies } from '../contexts/MovieContext';
 import { tmdbService } from '../services/tmdbService';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faFilm, faFire, faStar, faCalendar } from '@fortawesome/free-solid-svg-icons';
+import { faFilm, faFire, faStar, faCalendar, faExclamationTriangle } from '@fortawesome/free-solid-svg-icons';
 
 const MoviesPage = () => {
-  const [featuredMovies, setFeaturedMovies] = useState([]);
-  const [popularMovies, setPopularMovies] = useState([]);
-  const [topRatedMovies, setTopRatedMovies] = useState([]);
-  const [nowPlayingMovies, setNowPlayingMovies] = useState([]);
-  const [upcomingMovies, setUpcomingMovies] = useState([]);
+  const navigate = useNavigate();
+  const [moviesData, setMoviesData] = useState({
+    popular: [],
+    topRated: [],
+    nowPlaying: [],
+    upcoming: []
+  });
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
   const [toastInfo, setToastInfo] = useState({ isVisible: false, message: '', type: 'info' });
   const [activeFilter, setActiveFilter] = useState('all');
 
-  const { addMovie, isMovieInList } = useMovies();
+  const { toggleMovie, isMovieInList } = useMovies();
 
   const fetchMovies = useCallback(async () => {
     try {
       setIsLoading(true);
       setError(null);
       
-      // Buscar todas as categorias de filmes
-      const [popular, topRated, nowPlaying, upcoming] = await Promise.allSettled([
+      const results = await Promise.allSettled([
         tmdbService.getPopularMovies(),
         tmdbService.getTopRatedMovies(),
-        tmdbService.getNowPlayingMovies && tmdbService.getNowPlayingMovies(),
-        tmdbService.getUpcomingMovies && tmdbService.getUpcomingMovies(),
-      ].filter(Boolean));
+        tmdbService.getNowPlayingMovies?.(),
+        tmdbService.getUpcomingMovies?.(),
+      ]);
 
-      // Processar respostas
-      const popularResults = popular.status === 'fulfilled' ? popular.value : [];
-      const topRatedResults = topRated.status === 'fulfilled' ? topRated.value : [];
-      const nowPlayingResults = nowPlaying && nowPlaying.status === 'fulfilled' ? nowPlaying.value : [];
-      const upcomingResults = upcoming && upcoming.status === 'fulfilled' ? upcoming.value : [];
+      const [popular, topRated, nowPlaying, upcoming] = results.map(res => 
+        res.status === 'fulfilled' ? res.value : []
+      );
 
-      // Definir filmes em destaque (usando os populares)
-      setFeaturedMovies(popularResults.slice(0, 5));
-      setPopularMovies(popularResults);
-      setTopRatedMovies(topRatedResults);
-      setNowPlayingMovies(nowPlayingResults);
-      setUpcomingMovies(upcomingResults);
-
-      // Verificar se todas as requisições falharam
-      const requests = [popular, topRated, nowPlaying, upcoming].filter(req => req !== undefined);
-      const failedRequests = requests.filter(req => req.status === 'rejected');
-      
-      if (failedRequests.length === requests.length) {
-        throw new Error('Não foi possível carregar os filmes. Verifique sua conexão.');
+      if (results.every(res => res.status === 'rejected')) {
+        throw new Error('Falha na conexão com o catálogo de filmes.');
       }
+
+      setMoviesData({ popular, topRated, nowPlaying, upcoming });
     } catch (err) {
-      setError(err.message || 'Não foi possível carregar os filmes. Tente novamente.');
-      console.error(err);
+      setError(err.message);
     } finally {
       setIsLoading(false);
     }
@@ -67,216 +58,119 @@ const MoviesPage = () => {
     fetchMovies();
   }, [fetchMovies]);
 
-  const handleAddToList = (movie) => {
-    if (isMovieInList(movie.id)) {
-      setToastInfo({ 
-        isVisible: true, 
-        message: `"${movie.title}" já está na sua lista.`, 
-        type: 'info' 
-      });
-    } else {
-      addMovie(movie);
-      setToastInfo({ 
-        isVisible: true, 
-        message: `"${movie.title}" foi adicionado à sua lista!`, 
-        type: 'success' 
-      });
+  const handleToggleMovie = (movie) => {
+    const wasAdded = toggleMovie(movie);
+    setToastInfo({
+      isVisible: true,
+      message: wasAdded ? `"${movie.title}" guardado na sua lista!` : `Removido da sua lista.`,
+      type: wasAdded ? 'success' : 'info'
+    });
+  };
+
+  const filteredMovies = useMemo(() => {
+    if (activeFilter === 'all') {
+      const combined = [...moviesData.popular, ...moviesData.topRated, ...moviesData.nowPlaying, ...moviesData.upcoming];
+      return combined.filter((m, i, self) => self.findIndex(t => t.id === m.id) === i);
     }
-  };
+    const map = {
+      'popular': moviesData.popular,
+      'top-rated': moviesData.topRated,
+      'now-playing': moviesData.nowPlaying,
+      'upcoming': moviesData.upcoming
+    };
+    return map[activeFilter] || [];
+  }, [activeFilter, moviesData]);
 
-  const handleRetry = () => {
-    setError(null);
-    fetchMovies();
-  };
+  if (isLoading) return <MoviesSkeleton />;
 
-  // Filtrar filmes com base na categoria selecionada
-  const getFilteredMovies = () => {
-    switch (activeFilter) {
-      case 'popular':
-        return popularMovies;
-      case 'top-rated':
-        return topRatedMovies;
-      case 'now-playing':
-        return nowPlayingMovies;
-      case 'upcoming':
-        return upcomingMovies;
-      default:
-        return [...popularMovies, ...topRatedMovies, ...nowPlayingMovies, ...upcomingMovies]
-          .filter((movie, index, self) => 
-            index === self.findIndex(m => m.id === movie.id)
-          );
-    }
-  };
-
-  if (isLoading) {
-    return (
-      <div className="min-h-screen bg-gradient-to-b from-pr-black to-pr-gray-dark/30">
-        <div className="h-[56.25vw] min-h-[400px] max-h-[95vh] w-full bg-pr-border animate-pulse"></div>
-        <div className="py-12 space-y-12">
-          {[...Array(4)].map((_, index) => (
-            <div key={index} className="space-y-4">
-              <div className="h-8 w-48 bg-pr-border rounded-lg ml-4 md:ml-0 animate-pulse"></div>
-              <div className="flex space-x-4 px-4 md:px-0 overflow-x-hidden">
-                {[...Array(6)].map((_, cardIndex) => (
-                  <div key={cardIndex} className="flex-shrink-0 w-48 aspect-[2/3] bg-pr-border rounded-lg animate-pulse"></div>
-                ))}
-              </div>
-            </div>
-          ))}
-        </div>
-      </div>
-    );
-  }
-
-  if (error) {
-    return (
-      <div className="min-h-screen flex flex-col justify-center items-center bg-gradient-to-b from-pr-black to-pr-gray-dark/30 px-4">
-        <div className="text-center max-w-md">
-          <div className="mb-6">
-            <svg className="w-16 h-16 mx-auto text-pr-red" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-            </svg>
-          </div>
-          <h2 className="text-2xl font-bold text-pr-gray-light mb-2">Ocorreu um Erro</h2>
-          <p className="text-pr-gray mb-6">{error}</p>
-          <div className="flex flex-col sm:flex-row gap-3 justify-center">
-            <Button onClick={handleRetry} variant="primary">
-              Tentar Novamente
-            </Button>
-            <Button onClick={() => window.location.reload()} variant="secondary">
-              Recarregar Página
-            </Button>
-          </div>
-        </div>
-      </div>
-    );
-  }
-
-  const filteredMovies = getFilteredMovies();
+  if (error) return <ErrorView error={error} onRetry={fetchMovies} />;
 
   return (
-    <>
+    <main className="min-h-screen bg-pr-black text-white selection:bg-pr-cyan selection:text-pr-black pb-20">
       {toastInfo.isVisible && (
         <Toast 
-          message={toastInfo.message} 
-          type={toastInfo.type} 
+          {...toastInfo}
           onClose={() => setToastInfo({ ...toastInfo, isVisible: false })} 
         />
       )}
 
-      <HeroCarousel movies={featuredMovies} onAddToList={handleAddToList} />
+      {/* Hero Section Impactante */}
+      <HeroCarousel movies={moviesData.popular.slice(0, 5)} onAddToList={handleToggleMovie} />
 
-      <div className="py-8 bg-pr-gray-dark/50">
-        <div className="container mx-auto px-4">
-          <h2 className="text-2xl font-bold text-pr-gray-light mb-6">Explorar Filmes</h2>
-          
-          {/* Filtros de Categoria */}
-          <div className="flex flex-wrap gap-3 mb-8">
-            <Button
-              variant={activeFilter === 'all' ? 'primary' : 'secondary'}
-              onClick={() => setActiveFilter('all')}
-              className="flex items-center"
-            >
-              <FontAwesomeIcon icon={faFilm} className="mr-2" />
-              Todos
-            </Button>
-            <Button
-              variant={activeFilter === 'popular' ? 'primary' : 'secondary'}
-              onClick={() => setActiveFilter('popular')}
-              className="flex items-center"
-            >
-              <FontAwesomeIcon icon={faFire} className="mr-2" />
-              Populares
-            </Button>
-            <Button
-              variant={activeFilter === 'top-rated' ? 'primary' : 'secondary'}
-              onClick={() => setActiveFilter('top-rated')}
-              className="flex items-center"
-            >
-              <FontAwesomeIcon icon={faStar} className="mr-2" />
-              Melhores Avaliados
-            </Button>
-            {nowPlayingMovies.length > 0 && (
-              <Button
-                variant={activeFilter === 'now-playing' ? 'primary' : 'secondary'}
-                onClick={() => setActiveFilter('now-playing')}
-                className="flex items-center"
-              >
-                <FontAwesomeIcon icon={faFilm} className="mr-2" />
-                Nos Cinemas
-              </Button>
-            )}
-            {upcomingMovies.length > 0 && (
-              <Button
-                variant={activeFilter === 'upcoming' ? 'primary' : 'secondary'}
-                onClick={() => setActiveFilter('upcoming')}
-                className="flex items-center"
-              >
-                <FontAwesomeIcon icon={faCalendar} className="mr-2" />
-                Em Breve
-              </Button>
-            )}
+      <section className="container mx-auto px-6 mt-12">
+        {/* HEADER DO CATÁLOGO */}
+        <div className="flex flex-col md:flex-row md:items-end justify-between mb-12 gap-8">
+          <div>
+            <h1 className="text-4xl font-black text-white uppercase tracking-tighter">
+              FILMES <span className="text-pr-cyan">PRIME</span>
+            </h1>
+            <p className="text-pr-gray-light mt-2 max-w-md">
+              Explore os maiores sucessos de bilheteria e clássicos do cinema mundial.
+            </p>
           </div>
-
-          {/* Resultados Filtrados */}
-          {filteredMovies.length > 0 ? (
-            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4 md:gap-6">
-              {filteredMovies.map((movie) => (
-                <MovieCard
-                  key={movie.id}
-                  movie={movie}
-                  onClick={() => handleAddToList(movie)}
-                />
-              ))}
-            </div>
-          ) : (
-            <div className="text-center py-12">
-              <FontAwesomeIcon icon={faFilm} className="text-5xl text-pr-border mb-4" />
-              <h3 className="text-xl font-bold text-pr-gray-light mb-2">Nenhum filme encontrado</h3>
-              <p className="text-pr-gray">Tente selecionar uma categoria diferente.</p>
-            </div>
-          )}
+          
+          {/* BARRA DE FILTROS ESTILIZADA */}
+          <nav className="flex flex-wrap gap-3 bg-white/5 p-2 rounded-3xl backdrop-blur-md border border-white/5">
+            <FilterButton active={activeFilter === 'all'} onClick={() => setActiveFilter('all')} icon={faFilm} label="TODOS" />
+            <FilterButton active={activeFilter === 'popular'} onClick={() => setActiveFilter('popular')} icon={faFire} label="EM ALTA" />
+            <FilterButton active={activeFilter === 'top-rated'} onClick={() => setActiveFilter('top-rated')} icon={faStar} label="CRÍTICA" />
+            <FilterButton active={activeFilter === 'upcoming'} onClick={() => setActiveFilter('upcoming')} icon={faCalendar} label="EM BREVE" />
+          </nav>
         </div>
-      </div>
 
-      {/* Seções de Categorias (apenas se não estiver filtrado) */}
-      {activeFilter === 'all' && (
-        <div className="py-12 space-y-12 bg-gradient-to-b from-pr-black to-pr-gray-dark/30">
-          {popularMovies.length > 0 && (
-            <MovieCarousel 
-              title="Populares" 
-              movies={popularMovies}
-              onMovieSelect={handleAddToList}
+        {/* GRID DE FILMES */}
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-6">
+          {filteredMovies.map((movie) => (
+            <MovieCard
+              key={movie.id}
+              movie={movie}
+              onClick={() => navigate(`/movie/${movie.id}`)}
+              isInList={isMovieInList(movie.id)}
+              onAddToList={() => handleToggleMovie(movie)}
             />
-          )}
-          
-          {topRatedMovies.length > 0 && (
-            <MovieCarousel 
-              title="Melhores Avaliados" 
-              movies={topRatedMovies}
-              onMovieSelect={handleAddToList}
-            />
-          )}
-          
-          {nowPlayingMovies.length > 0 && (
-            <MovieCarousel 
-              title="Nos Cinemas" 
-              movies={nowPlayingMovies}
-              onMovieSelect={handleAddToList}
-            />
-          )}
-          
-          {upcomingMovies.length > 0 && (
-            <MovieCarousel 
-              title="Em Breve" 
-              movies={upcomingMovies}
-              onMovieSelect={handleAddToList}
-            />
-          )}
+          ))}
         </div>
-      )}
-    </>
+
+        {/* CARROSSEL DE SEÇÕES (Apenas em "Todos") */}
+        {activeFilter === 'all' && (
+          <div className="mt-24 space-y-20">
+             <MovieCarousel title="LANÇAMENTOS RECENTES" movies={moviesData.nowPlaying} onAddToList={handleToggleMovie} />
+             <MovieCarousel title="TOP AVALIADOS" movies={moviesData.topRated} onAddToList={handleToggleMovie} />
+          </div>
+        )}
+      </section>
+    </main>
   );
 };
+
+// Componente de Botão de Filtro - Padronizado com a SeriesPage
+const FilterButton = ({ active, onClick, icon, label }) => (
+  <button 
+    onClick={onClick}
+    className={`px-6 py-3 rounded-full flex items-center gap-2 transition-all duration-300 font-bold text-xs uppercase tracking-widest border ${
+      active 
+      ? 'bg-pr-cyan border-pr-cyan text-pr-black shadow-[0_0_15px_rgba(0,255,255,0.3)]' 
+      : 'bg-transparent border-transparent text-pr-gray hover:text-white hover:border-white/10'
+    }`}
+  >
+    <FontAwesomeIcon icon={icon} className="text-sm" />
+    {label}
+  </button>
+);
+
+const MoviesSkeleton = () => (
+  <div className="min-h-screen bg-pr-black flex items-center justify-center">
+    <LoadingSpinner message="Preparando catálogo..." size="large" />
+  </div>
+);
+
+const ErrorView = ({ error, onRetry }) => (
+  <div className="h-screen flex flex-col items-center justify-center text-center p-6 bg-pr-black">
+    <FontAwesomeIcon icon={faExclamationTriangle} className="text-pr-red text-5xl mb-6" />
+    <h2 className="text-2xl font-black text-white uppercase tracking-tighter mb-2">Erro de Carregamento</h2>
+    <p className="text-pr-gray mb-8">{error}</p>
+    <Button variant="primary" onClick={onRetry} className="font-bold">TENTAR NOVAMENTE</Button>
+  </div>
+);
 
 export default MoviesPage;
