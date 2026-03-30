@@ -1,8 +1,7 @@
-/* eslint-disable react/prop-types */
-/* eslint-disable react-refresh/only-export-components */
 import { createContext, useState, useEffect, useContext, useCallback, useMemo } from 'react';
 
-import * as movieStorageService from '../services/movieStorageService';
+// Importação corrigida para garantir que o objeto seja lido corretamente
+import { movieStorageService } from '../services/movieStorageService';
 
 const MovieContext = createContext();
 
@@ -10,10 +9,11 @@ export const MovieProvider = ({ children }) => {
   const [myList, setMyList] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
 
-  // Carregar a lista inicial de filmes
+  // Carregar a lista inicial
   useEffect(() => {
     const loadMovies = () => {
       try {
+        // Alinhado com o nome no seu serviço: getMyList
         const savedMovies = movieStorageService.getMyList();
         setMyList(savedMovies);
       } catch (error) {
@@ -26,14 +26,16 @@ export const MovieProvider = ({ children }) => {
     loadMovies();
   }, []);
 
-  // --- Funções CRUD Otimizadas com useCallback ---
+  // --- Funções CRUD Corrigidas para os nomes do seu Service ---
 
   const addMovie = useCallback((movie) => {
     try {
-      // O serviço já cuida de gerar um localId único
-      const newMovie = movieStorageService.addMovieToList(movie);
-      setMyList(prevList => [...prevList, newMovie]);
-      return newMovie;
+      // Ajustado de 'addMovieToList' para 'addItem' (conforme seu service)
+      const newItem = movieStorageService.addItem(movie);
+      if (newItem) {
+        setMyList(prevList => [...prevList, newItem]);
+        return newItem;
+      }
     } catch (error) {
       console.error("Falha ao adicionar filme:", error);
       throw error;
@@ -42,7 +44,8 @@ export const MovieProvider = ({ children }) => {
 
   const updateMovie = useCallback((updatedMovie) => {
     try {
-      movieStorageService.updateMovieInList(updatedMovie);
+      // Ajustado de 'updateMovieInList' para 'updateItem'
+      movieStorageService.updateItem(updatedMovie);
       setMyList(prevList => 
         prevList.map(movie => 
           movie.localId === updatedMovie.localId ? updatedMovie : movie
@@ -56,7 +59,8 @@ export const MovieProvider = ({ children }) => {
 
   const deleteMovie = useCallback((localId) => {
     try {
-      movieStorageService.removeMovieFromList(localId);
+      // Ajustado de 'removeMovieFromList' para 'removeItem'
+      movieStorageService.removeItem(localId);
       setMyList(prevList => prevList.filter(movie => movie.localId !== localId));
     } catch (error) {
       console.error("Falha ao remover filme:", error);
@@ -65,25 +69,27 @@ export const MovieProvider = ({ children }) => {
   }, []);
 
   const isMovieInList = useCallback((apiId) => {
-    return myList.some(movie => movie.id === apiId);
-  }, [myList]);
-
-  const getMovieByLocalId = useCallback((localId) => {
-    return myList.find(movie => movie.localId === localId);
-  }, [myList]);
-
-  const refreshList = useCallback(() => {
-    try {
-      const savedMovies = movieStorageService.getMyList();
-      setMyList(savedMovies);
-      return savedMovies;
-    } catch (error) {
-      console.error("Falha ao recarregar lista:", error);
-      throw error;
-    }
+    // Usando o método nativo do seu service para performance
+    return movieStorageService.isItemInList(apiId);
   }, []);
 
-  // --- Valor do Contexto Otimizado com useMemo ---
+  const getMovieByLocalId = useCallback((localId) => {
+    return movieStorageService.getItemById(localId);
+  }, []);
+
+  const toggleMovie = useCallback(async (movie) => {
+    const inList = isMovieInList(movie.id);
+    if (inList) {
+      // Remove
+      const item = myList.find(m => m.id === movie.id);
+      if (item) {
+        await deleteMovie(item.localId);
+      }
+    } else {
+      // Add
+      await addMovie(movie);
+    }
+  }, [isMovieInList, myList, deleteMovie, addMovie]);
 
   const value = useMemo(() => ({
     myList,
@@ -91,18 +97,18 @@ export const MovieProvider = ({ children }) => {
     addMovie,
     updateMovie,
     deleteMovie,
+    toggleMovie,
     isMovieInList,
     getMovieByLocalId,
-    refreshList,
   }), [
     myList, 
     isLoading, 
     addMovie, 
     updateMovie, 
-    deleteMovie, 
+    deleteMovie,
+    toggleMovie,
     isMovieInList, 
     getMovieByLocalId,
-    refreshList
   ]);
 
   return (
