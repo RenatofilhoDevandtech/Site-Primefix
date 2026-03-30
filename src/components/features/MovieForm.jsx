@@ -1,34 +1,18 @@
-/* eslint-disable react/prop-types */
 import { useState, useEffect } from 'react';
 import { tmdbService } from '../../services/tmdbService';
 import Input from '../ui/Input';
 import Button from '../ui/Button';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { 
-  faImage, 
-  faCalendar, 
-  faStar, 
-  faClock,
-  faFilm,
-  faSpinner,
-  faCheckCircle,
-  faTimesCircle,
-  faSearch
+  faImage,
+  faSpinner, faCheckCircle, faTimesCircle, faSearch, faMagic
 } from '@fortawesome/free-solid-svg-icons';
 
-// --- COMPONENTE ---
 const MovieForm = ({ onSubmit, initialData = null, isSubmitting = false }) => {
-  // --- ESTADOS ---
   const [formData, setFormData] = useState({
-    title: '',
-    overview: '',
-    poster_path: '',
-    release_date: '',
-    vote_average: '',
-    runtime: '',
-    genres: '',
+    title: '', overview: '', poster_path: '', release_date: '',
+    vote_average: '', runtime: '', genres: '',
   });
-  const [errors, setErrors] = useState({});
   const [imagePreview, setImagePreview] = useState('');
   const [isImageLoading, setIsImageLoading] = useState(false);
   const [imageError, setImageError] = useState(null);
@@ -36,7 +20,7 @@ const MovieForm = ({ onSubmit, initialData = null, isSubmitting = false }) => {
   const [searchResults, setSearchResults] = useState([]);
   const [isSearching, setIsSearching] = useState(false);
 
-  // Efeito para preencher o formulário com dados iniciais (para edição)
+  // Sync de dados iniciais para edição
   useEffect(() => {
     if (initialData) {
       const genresString = Array.isArray(initialData.genres) 
@@ -59,198 +43,172 @@ const MovieForm = ({ onSubmit, initialData = null, isSubmitting = false }) => {
     }
   }, [initialData]);
 
-  // Efeito para validar a imagem quando a URL muda
+  // Validação de Imagem com Debounce visual
   useEffect(() => {
     if (formData.poster_path) {
-      validateImage(formData.poster_path);
+      const timer = setTimeout(() => validateImage(formData.poster_path), 500);
+      return () => clearTimeout(timer);
     } else {
       setImagePreview('');
       setImageError(null);
     }
   }, [formData.poster_path]);
 
-  // --- FUNÇÕES ---
-
   const validateImage = (url) => {
     setIsImageLoading(true);
     setImageError(null);
     const img = new Image();
-    img.onload = () => {
-      setIsImageLoading(false);
-      setImagePreview(url);
-    };
-    img.onerror = () => {
-      setIsImageLoading(false);
-      setImageError('Não foi possível carregar a imagem a partir desta URL.');
-    };
+    img.onload = () => { setIsImageLoading(false); setImagePreview(url); };
+    img.onerror = () => { setIsImageLoading(false); setImageError('URL de imagem inválida.'); };
     img.src = url;
   };
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
-    if (errors[name]) {
-      setErrors((prev) => ({ ...prev, [name]: null }));
-    }
+    setFormData(prev => ({ ...prev, [name]: value }));
   };
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    if (!isSubmitting) {
-      onSubmit(formData);
-    }
-  };
-
-  // Função para buscar filmes no TMDB
   const handleSearchTMDB = async (e) => {
     e.preventDefault();
     if (!searchQuery.trim()) return;
-    
     setIsSearching(true);
-    setSearchResults([]);
     try {
-      const results = await tmdbService.searchMovies(searchQuery);
-      setSearchResults(results.results.slice(0, 5)); // Limita a 5 resultados
+      const results = await tmdbService.search(searchQuery);
+      setSearchResults(results.results.slice(0, 5));
     } catch (error) {
-      console.error("Erro ao buscar no TMDB:", error);
+      console.error("Erro TMDB:", error);
     } finally {
       setIsSearching(false);
     }
   };
 
-  // Função para preencher o formulário com um resultado da busca
   const handleSelectMovie = async (movie) => {
     try {
-        const details = await tmdbService.getMovieDetails(movie.id);
-        setFormData({
-            title: details.title || '',
-            overview: details.overview || '',
-            genres: details.genres?.map(g => g.name).join(', ') || '',
-            poster_path: details.poster_path ? `https://image.tmdb.org/t/p/w500${details.poster_path}` : '',
-            release_date: details.release_date || '',
-            vote_average: details.vote_average || '',
-            runtime: details.runtime || '',
-        });
-        setSearchQuery('');
-        setSearchResults([]);
+      const details = await tmdbService.getMovieDetails(movie.id);
+      setFormData({
+        title: details.title || '',
+        overview: details.overview || '',
+        genres: details.genres?.map(g => g.name).join(', ') || '',
+        poster_path: details.poster_path ? `https://image.tmdb.org/t/p/w500${details.poster_path}` : '',
+        release_date: details.release_date || '',
+        vote_average: details.vote_average || '',
+        runtime: details.runtime || '',
+      });
+      setSearchResults([]);
+      setSearchQuery('');
     } catch (error) {
-        console.error("Erro ao buscar detalhes do filme:", error);
+      console.error("Erro Detalhes:", error);
     }
   };
 
-  // --- RENDERIZAÇÃO ---
   return (
-    <div className="max-w-4xl mx-auto bg-secondary/50 backdrop-blur-lg border border-white/10 rounded-xl p-6 md:p-8">
-      <h2 className="text-3xl font-bold text-text-light mb-2">
-        {initialData ? 'Editar Filme' : 'Adicionar Novo Título'}
-      </h2>
-      <p className="text-text-muted mb-8">Preencha os campos manualmente ou use a busca para preencher automaticamente.</p>
-
-      {/* Seção de Busca no TMDB */}
-      <div className="mb-8 relative">
-        <form onSubmit={handleSearchTMDB} className="flex gap-2">
-          <Input 
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            placeholder="Buscar filme no TMDB para preencher..."
-          />
-          <Button type="submit" variant="secondary" disabled={isSearching}>
-            {isSearching ? <FontAwesomeIcon icon={faSpinner} className="animate-spin" /> : <FontAwesomeIcon icon={faSearch} />}
-          </Button>
-        </form>
-        {searchResults.length > 0 && (
-          <ul className="absolute w-full bg-secondary border border-white/10 rounded-md mt-2 max-h-60 overflow-y-auto z-10">
-            {searchResults.map(movie => (
-              <li 
-                key={movie.id}
-                onClick={() => handleSelectMovie(movie)}
-                className="flex items-center p-2 gap-3 hover:bg-primary/20 cursor-pointer"
-              >
-                <img 
-                  src={movie.poster_path ? `https://image.tmdb.org/t/p/w92${movie.poster_path}` : 'https://via.placeholder.com/92x138?text=N/A'}
-                  alt={movie.title}
-                  className="w-10 rounded-sm"
-                />
-                <div>
-                  <p className="font-bold text-text-light">{movie.title}</p>
-                  <p className="text-sm text-text-muted">{movie.release_date?.split('-')[0] || 'Data desconhecida'}</p>
-                </div>
-              </li>
-            ))}
-          </ul>
-        )}
-      </div>
-      
-      <form onSubmit={handleSubmit} className="grid grid-cols-1 md:grid-cols-3 gap-8">
-        <div className="md:col-span-2 space-y-6">
-          {/* Inputs do formulário */}
-          <div>
-            <label htmlFor="title" className="block text-sm font-medium text-text-muted mb-2">Título *</label>
-            <Input id="title" name="title" value={formData.title} onChange={handleChange} required />
+    <div className="max-w-5xl mx-auto bg-[#0f0f0f]/80 backdrop-blur-2xl border border-white/5 rounded-[32px] overflow-hidden shadow-2xl">
+      <div className="p-6 md:p-12">
+        <header className="mb-10 text-center md:text-left">
+          <div className="flex items-center justify-center md:justify-start gap-3 mb-2 text-pr-cyan">
+            <FontAwesomeIcon icon={faMagic} className="text-sm" />
+            <span className="text-[10px] uppercase tracking-[4px] font-bold">Content Manager</span>
           </div>
-          <div>
-            <label htmlFor="overview" className="block text-sm font-medium text-text-muted mb-2">Sinopse *</label>
-            <textarea
-              id="overview" name="overview" value={formData.overview} onChange={handleChange}
-              rows="6" required
-              className="w-full bg-secondary border border-white/20 rounded-md p-3 text-text-light placeholder:text-text-muted focus:outline-none focus:ring-2 focus:ring-primary"
+          <h2 className="text-3xl md:text-4xl font-black text-white tracking-tighter">
+            {initialData ? 'Refinar Título' : 'Novo Conteúdo'}
+          </h2>
+        </header>
+
+        {/* Busca Inteligente */}
+        <section className="mb-12">
+          <form onSubmit={handleSearchTMDB} className="flex gap-3 bg-white/5 p-2 rounded-2xl border border-white/5 focus-within:border-pr-cyan/50 transition-all">
+            <input 
+              className="flex-grow bg-transparent border-none focus:ring-0 text-white px-4 placeholder:text-white/20 text-sm"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              placeholder="Buscar no TMDB para auto-preencher..."
             />
-          </div>
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-            <div>
-              <label htmlFor="release_date" className="block text-sm font-medium text-text-muted mb-2">Lançamento</label>
-              <Input id="release_date" name="release_date" type="date" value={formData.release_date} onChange={handleChange} icon={faCalendar} />
+            <Button type="submit" variant="primary" className="h-11 w-11 !p-0 rounded-xl" disabled={isSearching}>
+              {isSearching ? <FontAwesomeIcon icon={faSpinner} className="animate-spin" /> : <FontAwesomeIcon icon={faSearch} />}
+            </Button>
+          </form>
+          
+          {searchResults.length > 0 && (
+            <div className="relative">
+              <ul className="absolute w-full mt-2 bg-[#1a1a1a] border border-white/10 rounded-2xl overflow-hidden z-50 shadow-2xl animate-in fade-in slide-in-from-top-2">
+                {searchResults.map(movie => (
+                  <li key={movie.id} onClick={() => handleSelectMovie(movie)} className="flex items-center p-3 gap-4 hover:bg-pr-cyan/10 cursor-pointer transition-colors border-b border-white/5 last:border-none">
+                    <img src={movie.poster_path ? `https://image.tmdb.org/t/p/w92${movie.poster_path}` : ''} className="w-10 h-14 object-cover rounded-lg shadow-lg" alt="" />
+                    <div>
+                      <p className="font-bold text-white text-sm">{movie.title}</p>
+                      <p className="text-[10px] text-white/40 uppercase tracking-widest">{movie.release_date?.split('-')[0]}</p>
+                    </div>
+                  </li>
+                ))}
+              </ul>
             </div>
-            <div>
-              <label htmlFor="runtime" className="block text-sm font-medium text-text-muted mb-2">Duração (minutos)</label>
-              <Input id="runtime" name="runtime" type="number" value={formData.runtime} onChange={handleChange} icon={faClock} />
-            </div>
-            <div>
-              <label htmlFor="vote_average" className="block text-sm font-medium text-text-muted mb-2">Avaliação (0-10)</label>
-              <Input id="vote_average" name="vote_average" type="number" step="0.1" value={formData.vote_average} onChange={handleChange} icon={faStar} />
-            </div>
-            <div>
-              <label htmlFor="genres" className="block text-sm font-medium text-text-muted mb-2">Géneros</label>
-              <Input id="genres" name="genres" value={formData.genres} onChange={handleChange} icon={faFilm} />
-            </div>
-          </div>
-          <div>
-            <label htmlFor="poster_path" className="block text-sm font-medium text-text-muted mb-2">URL da Imagem de Capa *</label>
-            <Input id="poster_path" name="poster_path" type="url" value={formData.poster_path} onChange={handleChange} required />
-          </div>
-        </div>
+          )}
+        </section>
 
-        <div className="space-y-4">
-          <label className="block text-sm font-medium text-text-muted mb-2">Pré-visualização da Capa</label>
-          <div className="relative w-full aspect-[2/3] bg-secondary rounded-lg border-2 border-dashed border-white/20 flex items-center justify-center">
-            {isImageLoading && <FontAwesomeIcon icon={faSpinner} className="text-text-muted text-3xl animate-spin" />}
-            {imageError && <FontAwesomeIcon icon={faTimesCircle} className="text-red-500 text-3xl" title={imageError} />}
-            {imagePreview && !imageError && (
-              <img src={imagePreview} alt="Pré-visualização da capa" className="w-full h-full object-cover rounded-md" />
-            )}
-            {!imagePreview && !isImageLoading && !imageError && (
-               <FontAwesomeIcon icon={faImage} className="text-text-muted text-3xl" />
-            )}
-          </div>
-          <div className="text-xs text-center text-text-muted h-4">
-            {isImageLoading && <p>Verificando...</p>}
-            {imageError && <p className="text-red-500">{imageError}</p>}
-            {imagePreview && !isImageLoading && !imageError && <p className="text-green-500 flex items-center justify-center gap-1"><FontAwesomeIcon icon={faCheckCircle} /> Imagem válida</p>}
-          </div>
-        </div>
+        <form onSubmit={(e) => { e.preventDefault(); onSubmit(formData); }} className="grid grid-cols-1 lg:grid-cols-12 gap-12">
+          {/* Coluna de Inputs */}
+          <div className="lg:col-span-8 space-y-8">
+            <div className="grid grid-cols-1 gap-6">
+              <Input label="Título Oficial" name="title" value={formData.title} onChange={handleChange} required placeholder="Ex: Inception" />
+              
+              <div className="space-y-2">
+                <label className="text-[10px] uppercase tracking-[2px] font-bold text-white/40 ml-1">Sinopse do Conteúdo</label>
+                <textarea
+                  name="overview" value={formData.overview} onChange={handleChange} rows="5" required
+                  className="w-full bg-white/5 border border-white/10 rounded-2xl p-4 text-white placeholder:text-white/10 focus:outline-none focus:border-pr-cyan/50 transition-all resize-none text-sm leading-relaxed"
+                  placeholder="Descreva a trama do filme..."
+                />
+              </div>
 
-        <div className="md:col-span-3 flex justify-end gap-3 pt-4 border-t border-white/10">
-          <Button type="button" variant="secondary" onClick={() => window.history.back()}>
-            Cancelar
-          </Button>
-          <Button type="submit" variant="primary" disabled={isSubmitting || isImageLoading || !!imageError}>
-            {isSubmitting ? <><FontAwesomeIcon icon={faSpinner} className="animate-spin mr-2" /> Salvando...</> : (initialData ? 'Atualizar Filme' : 'Adicionar Filme')}
-          </Button>
-        </div>
-      </form>
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                <Input label="Data" name="release_date" type="date" value={formData.release_date} onChange={handleChange} />
+                <Input label="Minutos" name="runtime" type="number" value={formData.runtime} onChange={handleChange} />
+                <Input label="IMDB" name="vote_average" type="number" step="0.1" value={formData.vote_average} onChange={handleChange} />
+                <Input label="Gêneros" name="genres" value={formData.genres} onChange={handleChange} />
+              </div>
+
+              <Input label="URL do Poster (W500)" name="poster_path" value={formData.poster_path} onChange={handleChange} required placeholder="https://image.tmdb.org/..." />
+            </div>
+          </div>
+
+          {/* Coluna de Preview (Sticky) */}
+          <div className="lg:col-span-4">
+            <div className="sticky top-24 space-y-6 flex flex-col items-center">
+              <span className="text-[10px] uppercase tracking-[3px] font-bold text-white/20">Poster Preview</span>
+              <div className="relative w-full aspect-[2/3] max-w-[280px] bg-white/5 rounded-[32px] border-2 border-dashed border-white/10 flex items-center justify-center overflow-hidden group shadow-2xl">
+                {isImageLoading && <FontAwesomeIcon icon={faSpinner} className="text-pr-cyan text-3xl animate-spin z-10" />}
+                {imagePreview && !imageError ? (
+                  <img src={imagePreview} className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" alt="Preview" />
+                ) : (
+                  <FontAwesomeIcon icon={faImage} className="text-white/10 text-5xl" />
+                )}
+                {imageError && <div className="absolute inset-0 bg-red-500/10 flex items-center justify-center"><FontAwesomeIcon icon={faTimesCircle} className="text-red-500 text-3xl" /></div>}
+              </div>
+              
+              {/* Status da Imagem */}
+              <div className="h-6 flex items-center gap-2">
+                {imagePreview && !imageError && !isImageLoading && (
+                  <span className="text-[9px] font-bold text-green-500 uppercase tracking-widest flex items-center gap-2">
+                    <FontAwesomeIcon icon={faCheckCircle} /> Assets Ready
+                  </span>
+                )}
+              </div>
+            </div>
+          </div>
+
+          {/* Botões de Ação */}
+          <div className="lg:col-span-12 flex flex-col sm:flex-row justify-end gap-4 pt-10 border-t border-white/5">
+            <Button type="button" variant="secondary" onClick={() => window.history.back()} className="h-14 px-10 rounded-2xl order-2 sm:order-1 text-[10px] uppercase font-black tracking-widest">
+              Descartar
+            </Button>
+            <Button type="submit" variant="primary" disabled={isSubmitting || imageError} className="h-14 px-12 rounded-2xl order-1 sm:order-2 shadow-[0_0_20px_rgba(0,242,254,0.2)]">
+              {isSubmitting ? <FontAwesomeIcon icon={faSpinner} className="animate-spin" /> : (initialData ? 'Salvar Alterações' : 'Publicar Título')}
+            </Button>
+          </div>
+        </form>
+      </div>
     </div>
   );
 };
 
 export default MovieForm;
-
