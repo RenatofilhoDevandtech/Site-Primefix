@@ -223,8 +223,23 @@ export const tmdbService = {
    */
   getMovieDetails: async (id) => {
     try {
-      const response = await apiClient.get(`/movie/${id}`);
-      return formatMovieData(response.data);
+      const [movieResponse, creditsResponse] = await Promise.all([
+        apiClient.get(`/movie/${id}`),
+        apiClient.get(`/movie/${id}/credits`)
+      ]);
+
+      const movieData = movieResponse.data;
+      const creditsData = creditsResponse.data;
+
+      return {
+        ...formatMovieData(movieData),
+        genres: movieData.genres,
+        runtime: movieData.runtime,
+        production_countries: movieData.production_countries,
+        original_language: movieData.original_language,
+        director: creditsData.crew.find(person => person.job === 'Director')?.name,
+        cast: creditsData.cast.slice(0, 5).map(actor => actor.name)
+      };
     } catch (error) {
       console.error('Erro ao buscar detalhes do filme:', error);
       throw error;
