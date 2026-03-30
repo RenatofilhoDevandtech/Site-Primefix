@@ -1,8 +1,6 @@
-/* eslint-disable react/prop-types */
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faSpinner } from '@fortawesome/free-solid-svg-icons';
 
-// Componente de Botão final para o Design System Primeflix
 const Button = ({ 
   children, 
   onClick, 
@@ -17,87 +15,59 @@ const Button = ({
   fullWidth = false,
   ...props 
 }) => {
-  // Classes base universais para todos os botões
+  
+  // Classes base: Adicionado tracking-widest e uppercase para o look Prime
   const baseClasses = `
-    inline-flex items-center justify-center font-bold rounded-lg 
-    transition-all duration-300 ease-in-out
-    focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-pr-black
-    disabled:opacity-40 disabled:cursor-not-allowed
+    inline-flex items-center justify-center font-black uppercase tracking-widest
+    transition-all duration-300 ease-out select-none
+    focus:outline-none focus:ring-4
+    disabled:opacity-30 disabled:cursor-not-allowed disabled:grayscale
+    active:scale-95 will-change-transform
     ${fullWidth ? 'w-full' : ''}
   `;
 
-  // Classes de tamanho
   const sizeClasses = {
-    sm: 'px-3 py-1.5 text-sm',
-    md: 'px-6 py-2.5 text-base',
-    lg: 'px-8 py-3.5 text-lg',
-    xl: 'px-10 py-4 text-xl'
+    sm: 'px-4 py-2 text-[10px] rounded-lg',
+    md: 'px-6 py-3 text-[11px] rounded-xl',
+    lg: 'px-8 py-4 text-xs rounded-2xl',
+    xl: 'px-10 py-5 text-sm rounded-2xl'
   };
 
-  // Classes específicas para cada variante, com propósito e hierarquia claros
   const variantClasses = {
     primary: `
       bg-pr-cyan text-pr-black 
-      hover:brightness-110 hover:shadow-lg hover:shadow-pr-cyan/30
-      active:brightness-95 active:scale-95
-      shadow-lg shadow-pr-cyan/20
-      focus:ring-pr-cyan
+      hover:shadow-[0_0_20px_rgba(0,255,255,0.4)] hover:brightness-110
+      focus:ring-pr-cyan/20
     `,
     secondary: `
-      bg-pr-gray-dark/50 text-pr-gray-light backdrop-blur-md 
-      border border-pr-border 
-      hover:bg-pr-gray-dark/80 hover:shadow-lg hover:shadow-pr-gray/10
-      active:brightness-95 active:scale-95
-      focus:ring-pr-gray-light
+      bg-white/5 text-white backdrop-blur-md 
+      border border-white/10 
+      hover:bg-white/10 hover:border-white/20
+      focus:ring-white/10
     `,
     danger: `
-      bg-pr-red text-pr-black
-      hover:brightness-110 hover:shadow-lg hover:shadow-pr-red/30
-      active:brightness-95 active:scale-95
-      shadow-lg shadow-pr-red/20
-      focus:ring-pr-red
-    `,
-    success: `
-      bg-green-600 text-white
-      hover:bg-green-700 hover:shadow-lg hover:shadow-green-600/30
-      active:brightness-95 active:scale-95
-      shadow-lg shadow-green-600/20
-      focus:ring-green-500
-    `,
-    warning: `
-      bg-yellow-500 text-pr-black
-      hover:bg-yellow-600 hover:shadow-lg hover:shadow-yellow-500/30
-      active:brightness-95 active:scale-95
-      shadow-lg shadow-yellow-500/20
-      focus:ring-yellow-400
+      bg-red-600 text-white
+      hover:shadow-[0_0_20px_rgba(220,38,38,0.4)] hover:bg-red-700
+      focus:ring-red-600/20
     `,
     ghost: `
-      bg-transparent text-pr-gray
-      hover:bg-pr-border hover:text-pr-gray-light
-      active:bg-pr-border/80
-      focus:ring-pr-gray
+      bg-transparent text-pr-gray-light
+      hover:bg-white/5 hover:text-white
+      focus:ring-white/5
     `,
     outline: `
-      bg-transparent text-pr-cyan border-2 border-pr-cyan
-      hover:bg-pr-cyan hover:text-pr-black
-      active:bg-pr-cyan/90
-      focus:ring-pr-cyan
-    `,
-    outlineSecondary: `
-      bg-transparent text-pr-gray-light border-2 border-pr-border
-      hover:bg-pr-border hover:text-pr-gray-light
-      active:bg-pr-border/80
-      focus:ring-pr-gray
+      bg-transparent text-pr-cyan border-2 border-pr-cyan/50
+      hover:border-pr-cyan hover:bg-pr-cyan/5
+      focus:ring-pr-cyan/10
     `,
   };
 
-  // Combinar todas as classes
   const buttonClasses = `
     ${baseClasses}
     ${sizeClasses[size]}
     ${variantClasses[variant]}
     ${className}
-    ${loading ? 'opacity-70 cursor-not-allowed' : ''}
+    ${loading ? 'cursor-wait' : ''}
   `;
 
   return (
@@ -108,20 +78,20 @@ const Button = ({
       disabled={disabled || loading}
       {...props}
     >
-      {/* Ícone esquerdo ou spinner de loading */}
-      {loading ? (
-        <FontAwesomeIcon icon={faSpinner} className="animate-spin mr-2" />
-      ) : iconLeft ? (
-        <FontAwesomeIcon icon={iconLeft} className="mr-2" />
-      ) : null}
-      
-      {/* Conteúdo do botão */}
-      {children}
-      
-      {/* Ícone direito */}
-      {iconRight && !loading && (
-        <FontAwesomeIcon icon={iconRight} className="ml-2" />
-      )}
+      {/* Container para manter o alinhamento mesmo com spinner */}
+      <div className="flex items-center justify-center gap-2.5">
+        {loading ? (
+          <FontAwesomeIcon icon={faSpinner} className="animate-spin opacity-70" />
+        ) : iconLeft ? (
+          <FontAwesomeIcon icon={iconLeft} className="text-current opacity-80" />
+        ) : null}
+        
+        <span className="relative top-[0.5px]">{children}</span>
+        
+        {iconRight && !loading && (
+          <FontAwesomeIcon icon={iconRight} className="text-current opacity-80" />
+        )}
+      </div>
     </button>
   );
 };
