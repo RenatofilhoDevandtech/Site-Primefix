@@ -1,38 +1,34 @@
 import { NavLink } from 'react-router-dom';
-// 1. Importamos o array 'navLinks' do nosso ficheiro de dados.
 import { navLinks } from './header.data'; 
 
 const NavLinks = () => {
-  // 2. Definimos a função que calcula os estilos. 
-  // O NavLink do react-router-dom nos dá o parâmetro 'isActive' automaticamente.
+  // 1. Função de estilos com melhor feedback visual
   const navLinkStyles = ({ isActive }) => {
-    const baseClasses = 'relative text-base font-medium transition-all duration-300 group';
-    // Se o link estiver ativo (corresponde à URL atual), adicionamos classes extras.
+    // Adicionado padding vertical (py-2) para aumentar a área de clique
+    const baseClasses = 'relative text-base font-medium transition-all duration-300 group py-2 px-1';
+    
     if (isActive) {
-      return `${baseClasses} text-pr-cyan after:content-[''] after:absolute after:bottom-[-8px] after:left-1/2 after:-translate-x-1/2 after:w-1.5 after:h-1.5 after:bg-pr-cyan after:rounded-full`;
+      return `${baseClasses} text-pr-cyan after:content-[''] after:absolute after:bottom-[-4px] after:left-1/2 after:-translate-x-1/2 after:w-1.5 after:h-1.5 after:bg-pr-cyan after:rounded-full after:shadow-[0_0_10px_#00ffff]`;
     }
-    // Senão, retornamos as classes padrão.
-    return `${baseClasses} text-pr-gray hover:text-pr-cyan`;
+    
+    return `${baseClasses} text-pr-gray hover:text-white`;
   };
 
   return (
-    // 3. Usamos um Fragment (<>) para agrupar a lista de links.
-    <>
-      {/* 4. Usamos .map() para percorrer cada item do array 'navLinks'. */}
+    <div className="flex items-center gap-8">
       {navLinks.map((link) => (
-        // 5. Para cada item, criamos um componente <NavLink>.
         <NavLink 
-          key={link.label} // A 'key' é essencial para o React otimizar a renderização de listas.
-          to={link.to}     // O atributo 'to' recebe o caminho do nosso objeto de dados.
-          className={navLinkStyles} // A 'className' usa nossa função de estilos.
+          key={link.label} 
+          to={link.to}     
+          className={navLinkStyles}
         >
-          {/* O <span> interno é para o efeito de zoom no texto ao passar o mouse. */}
-          <span className="group-hover:scale-105 transition-transform inline-block">
-            {link.label} {/* O 'label' do nosso objeto de dados é renderizado como o texto do link. */}
+          {/* O span mantém o efeito de escala sutil no hover */}
+          <span className="group-hover:scale-105 transition-transform inline-block pointer-events-none">
+            {link.label}
           </span>
         </NavLink>
       ))}
-    </>
+    </div>
   );
 };
 
