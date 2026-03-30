@@ -1,8 +1,9 @@
 import { useState, useEffect } from 'react';
-import { throttle } from '../../utils/throttle'; // Importamos a nossa função
+import { throttle } from '../../utils/throttle';
 
 const ScrollProgress = () => {
   const [scrollProgress, setScrollProgress] = useState(0);
+  const [isVisible, setIsVisible] = useState(false);
   
   useEffect(() => {
     const updateScrollProgress = () => {
@@ -10,7 +11,9 @@ const ScrollProgress = () => {
       const docHeight = document.documentElement.scrollHeight;
       const windowHeight = window.innerHeight;
       
-      // Evitar divisão por zero se o conteúdo for menor que a tela
+      // Mostrar a barra apenas se o usuário começou o scroll
+      setIsVisible(scrollTop > 20);
+
       if (docHeight === windowHeight) {
           setScrollProgress(0);
           return;
@@ -21,22 +24,26 @@ const ScrollProgress = () => {
       setScrollProgress(progress);
     };
     
-    // Criamos uma versão "throttled" da nossa função de atualização.
-    // Ela só será executada a cada 100ms, no máximo.
-    const throttledUpdate = throttle(updateScrollProgress, 100);
+    const throttledUpdate = throttle(updateScrollProgress, 50); // Reduzi para 50ms para maior fluidez
     
     window.addEventListener('scroll', throttledUpdate);
-    
-    // Limpeza: removemos o listener ao desmontar o componente
     return () => window.removeEventListener('scroll', throttledUpdate);
   }, []);
   
   return (
-    <div className="fixed top-0 left-0 right-0 h-1 z-50 bg-pr-border/20">
+    <div className={`fixed top-0 left-0 right-0 h-[2px] md:h-[3px] z-[110] transition-opacity duration-500 ${isVisible ? 'opacity-100' : 'opacity-0'}`}>
+      {/* Fundo sutil para a trilha */}
+      <div className="absolute inset-0 bg-white/5" />
+      
+      {/* A Barra de Progresso com Efeito Laser */}
       <div 
-        className="h-full bg-gradient-to-r from-pr-cyan to-pr-purple transition-all duration-100 ease-linear"
+        className="h-full bg-gradient-to-r from-transparent via-pr-cyan to-white transition-all duration-150 ease-out relative"
         style={{ width: `${scrollProgress}%` }}
-      />
+      >
+        {/* Efeito de Brilho na Ponta (Glow) */}
+        <div className="absolute right-0 top-1/2 -translate-y-1/2 w-10 h-full bg-pr-cyan blur-md opacity-50" />
+        <div className="absolute right-0 top-1/2 -translate-y-1/2 w-2 h-2 bg-white rounded-full shadow-[0_0_15px_#00f2fe]" />
+      </div>
     </div>
   );
 };
