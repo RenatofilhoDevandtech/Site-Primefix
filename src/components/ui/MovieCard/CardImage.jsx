@@ -1,30 +1,32 @@
 import PropTypes from 'prop-types';
 
 const CardImage = ({ imageUrl, alt, isLoaded, hasError, onLoad, onError }) => {
-  const errorImageUrl = 'https://placehold.co/500x750/1a1a1a/E1E1E6?text=Imagem+Indisponível';
+  const errorImageUrl = 'https://placehold.co/500x750/0F1115/00FFFF?text=SEM+POSTER';
 
   return (
-    <>
-      {/* Skeleton loader: só aparece se a imagem não estiver carregada E não houver erro. */}
+    <div className="absolute inset-0 z-10 overflow-hidden">
+      {/* SKELETON: Z-index 25 (Sempre no topo durante o loading) */}
       {!isLoaded && !hasError && (
-        <div className="absolute inset-0 bg-pr-border/10 animate-pulse rounded-lg"></div>
+        <div className="absolute inset-0 z-25 bg-pr-gray-dark/40 backdrop-blur-sm flex items-center justify-center">
+          <div className="absolute inset-0 -translate-x-full animate-shimmer bg-gradient-to-r from-transparent via-pr-cyan/10 to-transparent"></div>
+        </div>
       )}
       
-      {/* Imagem do filme */}
+      {/* IMAGEM: Z-index 10 (Abaixo de todas as proteções) */}
       <img
-        // Se houver um erro, usamos a URL de erro, senão a URL normal.
         src={hasError ? errorImageUrl : imageUrl}
         alt={alt}
-        className={`h-full w-full object-cover transition-all duration-500 ease-out group-hover:scale-110
-                    ${isLoaded ? 'opacity-100' : 'opacity-0'}`} // Efeito de fade-in
-        // A prop 'onLoad' do React dispara a nossa função quando a imagem é carregada.
         onLoad={onLoad}
-        // A prop 'onError' do React dispara a nossa função se a imagem falhar ao carregar.
         onError={onError}
-        // Otimização nativa do navegador para carregar imagens apenas quando estão perto de aparecer na tela.
         loading="lazy"
+        className={`h-full w-full object-cover transition-all duration-700 ease-out origin-center will-change-transform 
+                   group-hover:scale-105
+                   ${isLoaded ? 'opacity-100' : 'opacity-0 scale-95'}`} 
       />
-    </>
+
+      {/* GRADIENTE DE CONTRASTE FIXO: Z-index 15 (Protege a legibilidade básica) */}
+      <div className="absolute inset-0 z-15 bg-gradient-to-t from-pr-black/80 via-transparent to-pr-black/20 opacity-100 pointer-events-none" />
+    </div>
   );
 };
 
