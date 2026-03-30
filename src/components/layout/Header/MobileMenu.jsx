@@ -8,12 +8,8 @@ import { faSearch } from '@fortawesome/free-solid-svg-icons';
 const MobileMenu = ({ isOpen, onClose }) => {
     const menuRef = useRef(null);
 
-    // Efeito para "prender" o foco dentro do menu (Focus Trapping)
     useEffect(() => {
         if (!isOpen) return;
-
-        // CORREÇÃO PARA react-hooks/exhaustive-deps:
-        // Guardamos o ref.current numa variável local ao efeito.
         const node = menuRef.current; 
 
         const focusableElements = node.querySelectorAll('a[href], button, input');
@@ -37,43 +33,55 @@ const MobileMenu = ({ isOpen, onClose }) => {
 
         firstElement?.focus();
         node.addEventListener('keydown', handleTabKeyPress);
-
-        // Usamos a variável local na função de limpeza.
         return () => node?.removeEventListener('keydown', handleTabKeyPress);
     }, [isOpen]);
 
-    // Estilo para o link de navegação ativo no menu mobile
+    // ESTILO PADRONIZADO: Sem itálicos, Uppercase e Tracking
     const mobileNavLinkStyles = ({ isActive }) => {
-      const baseClasses = 'block py-3 px-4 text-lg transition-colors duration-300 border-l-4';
+      const baseClasses = 'block py-5 px-6 text-xs font-black uppercase tracking-[0.2em] transition-all duration-300 border-l-4';
       return isActive 
-        ? `${baseClasses} border-pr-cyan bg-pr-black/30 text-pr-cyan` 
-        : `${baseClasses} border-transparent text-pr-gray hover:text-pr-cyan hover:bg-pr-black/20`;
+        ? `${baseClasses} border-pr-cyan bg-pr-cyan/10 text-pr-cyan shadow-[inset_10px_0_15px_-10px_rgba(0,255,255,0.3)]` 
+        : `${baseClasses} border-transparent text-pr-gray-light hover:text-white hover:bg-white/5`;
     };
 
     if (!isOpen) return null;
 
     return (
-        <div ref={menuRef} className="fixed inset-0 z-40 mt-16 bg-pr-black/95 backdrop-blur-xl md:hidden animate-fade-in">
-            <div className="p-4">
-                {/* Campo de busca mobile */}
-                <div className="relative mb-6">
-                    <input type="search" placeholder="Buscar títulos..." className="bg-pr-gray-dark/70 border border-pr-border/50 rounded-full py-3 px-4 w-full text-white placeholder:text-pr-gray focus:outline-none focus:border-pr-cyan" />
-                    <FontAwesomeIcon icon={faSearch} className="absolute right-4 top-1/2 -translate-y-1/2 text-pr-gray" />
+        <div 
+            ref={menuRef} 
+            className="fixed inset-0 z-40 mt-16 bg-pr-black/98 backdrop-blur-2xl md:hidden animate-fade-in border-t border-white/5"
+        >
+            <div className="p-6">
+                {/* CAMPO DE BUSCA PADRONIZADO */}
+                <div className="relative mb-10">
+                    <input 
+                        type="search" 
+                        placeholder="BUSCAR NO CATÁLOGO..." 
+                        className="bg-white/5 border border-white/10 rounded-full py-4 px-6 w-full text-white text-[10px] font-bold uppercase tracking-widest placeholder:text-pr-gray focus:outline-none focus:border-pr-cyan focus:ring-1 focus:ring-pr-cyan/30 transition-all" 
+                    />
+                    <FontAwesomeIcon icon={faSearch} className="absolute right-6 top-1/2 -translate-y-1/2 text-pr-cyan text-sm" />
                 </div>
                 
-                {/* Navegação mobile */}
-                <nav className="space-y-1">
+                {/* NAVEGAÇÃO MOBILE */}
+                <nav className="flex flex-col gap-2">
                     {navLinks.map((link) => (
                         <NavLink
                             key={link.label}
                             to={link.to}
                             className={mobileNavLinkStyles}
-                            onClick={onClose} // Usamos a prop onClose para fechar o menu!
+                            onClick={onClose}
                         >
                             {link.label}
                         </NavLink>
                     ))}
                 </nav>
+
+                {/* DECORAÇÃO DE FUNDO (Sutil) */}
+                <div className="absolute bottom-10 left-1/2 -translate-x-1/2 opacity-20 pointer-events-none">
+                    <p className="text-[10px] font-black tracking-[0.5em] text-pr-gray uppercase">
+                        Siteprime © 2026
+                    </p>
+                </div>
             </div>
         </div>
     );
