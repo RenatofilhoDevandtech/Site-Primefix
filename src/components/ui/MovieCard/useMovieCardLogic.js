@@ -1,44 +1,50 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useCallback } from 'react';
 
 export const useMovieCardLogic = (movie) => {
   const [isImageLoaded, setIsImageLoaded] = useState(false);
   const [hasImageError, setHasImageError] = useState(false);
 
-  // Usamos useMemo para garantir que estes cálculos só são refeitos se 'movie' mudar.
   const cardData = useMemo(() => {
+    // URL da imagem com fallback premium
     const imageUrl = movie.poster_path
       ? `https://image.tmdb.org/t/p/w500${movie.poster_path}`
-      : 'https://placehold.co/500x750/1a1a1a/FFFFFF?text=Primeflix';
+      : 'https://placehold.co/500x750/0F1115/00FFFF?text=Sem+Poster';
 
-    const releaseYear = movie.release_date ? new Date(movie.release_date).getFullYear() : 'N/A';
+    // Ano de Lançamento (Filmes usam release_date, Séries usam first_air_date)
+    const rawDate = movie.release_date || movie.first_air_date;
+    const releaseYear = rawDate ? new Date(rawDate).getFullYear() : 'S/A';
     
-    const rating = movie.vote_average ? (movie.vote_average * 10) / 10 : null;
+    // Rating formatado com uma casa decimal fixa
+    const rating = movie.vote_average ? Number(movie.vote_average.toFixed(1)) : null;
     
-    let formattedRuntime = null;
-    if (movie.runtime) {
-      formattedRuntime = `${Math.floor(movie.runtime / 60)}h ${movie.runtime % 60}m`;
+    // Formatação de duração (Tratando caso o movie.runtime venha zerado)
+    let formattedRuntime = 'N/A';
+    if (movie.runtime && movie.runtime > 0) {
+      const hours = Math.floor(movie.runtime / 60);
+      const minutes = movie.runtime % 60;
+      formattedRuntime = hours > 0 ? `${hours}h ${minutes}m` : `${minutes}m`;
     }
 
-    const genresToDisplay = movie.genres?.slice(0, 2) || [];
-    const remainingGenresCount = movie.genres?.length > 2 ? movie.genres.length - 2 : 0;
-
     return {
-      title: movie.title || movie.name,
+      title: movie.title || movie.name || 'Título Indisponível',
       imageUrl,
       releaseYear,
       rating,
       formattedRuntime,
-      genresToDisplay,
-      remainingGenresCount,
+      genresToDisplay: movie.genres?.slice(0, 2) || [],
+      remainingGenresCount: movie.genres?.length > 2 ? movie.genres.length - 2 : 0,
     };
   }, [movie]);
 
-  const handleImageLoad = () => setIsImageLoaded(true);
+  // UseCallback para evitar re-renders desnecessários nos componentes filhos
+  const handleImageLoad = useCallback(() => {
+    setIsImageLoaded(true);
+  }, []);
   
-  const handleImageError = () => {
+  const handleImageError = useCallback(() => {
     setHasImageError(true);
-    setIsImageLoaded(true); // Consideramos carregada para remover o skeleton
-  };
+    setIsImageLoaded(true); 
+  }, []);
 
   return {
     ...cardData,
