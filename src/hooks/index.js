@@ -1,0 +1,11 @@
+// Central export for all hooks
+export { useAuth } from './useAuth';
+export { useToast } from './useToast';
+export { useCarouselScroll } from './useCarouselScroll';
+export { useHeroCarousel } from './useHeroCarousel';
+export { usePageData } from './usePageData';
+export { useScroll } from './useScroll';
+export { useSmartRecommendations } from './useSmartRecommendations';
+export { useClickOutside } from './useClickOutside';
+export { useNotifications } from './useNotifications';
+export { useWeather } from './useWeather';
