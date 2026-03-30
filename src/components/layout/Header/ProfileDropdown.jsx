@@ -4,10 +4,12 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCaretDown } from '@fortawesome/free-solid-svg-icons';
 import { useClickOutside } from '../../../hooks/useClickOutside';
 import { profileLinks, profileActions } from './header.data';
+import { useAuth } from '../../../hooks/useAuth';
 import PropTypes from 'prop-types';
 
 const ProfileDropdown = ({ user }) => {
   const [isOpen, setIsOpen] = useState(false);
+  const { logout } = useAuth();
   // Nosso custom hook em ação!
   const profileNode = useClickOutside(() => setIsOpen(false));
 
@@ -54,7 +56,14 @@ const ProfileDropdown = ({ user }) => {
             {profileActions.map((action) => (
                <button
                 key={action.label}
-                onClick={() => { action.onClick(); setIsOpen(false); }}
+                onClick={() => { 
+                  if (action.label === 'Sair') {
+                    logout();
+                  } else {
+                    action.onClick(); 
+                  }
+                  setIsOpen(false); 
+                }}
                 className="flex items-center gap-3 w-full px-3 py-2 text-pr-gray hover:text-white hover:bg-pr-black/30 rounded-md transition-colors"
               >
                 <FontAwesomeIcon icon={action.icon} className="w-4" />
