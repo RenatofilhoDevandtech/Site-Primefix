@@ -1,4 +1,3 @@
-// src/components/ui/Toast.jsx
 import { useEffect, useState, useCallback } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { 
@@ -20,36 +19,18 @@ const Toast = ({
   const [isVisible, setIsVisible] = useState(false);
   const [isExiting, setIsExiting] = useState(false);
 
-  // Função para fechar o toast com animação
   const handleClose = useCallback(() => {
     setIsExiting(true);
     setTimeout(() => {
-      onClose();
+      if (onClose) onClose();
     }, 300);
   }, [onClose]);
 
-  // Animação de entrada
   useEffect(() => {
-    const enterTimer = setTimeout(() => setIsVisible(true), 10);
-    return () => clearTimeout(enterTimer);
-  }, []);
-
-  // Fecha o toast automaticamente após a duração especificada
-  useEffect(() => {
-    if (isVisible) {
-      const timer = setTimeout(() => {
-        handleClose();
-      }, duration);
-      
-      return () => clearTimeout(timer);
-    }
-  }, [isVisible, duration, handleClose]); // Adicionado handleClose como dependência
-
-  const handleMouseEnter = () => {
-    // Pausa o timer de fechamento quando o mouse está sobre o toast
-    const timers = setTimeout(() => {}, 0);
-    return () => clearTimeout(timers);
-  };
+    setIsVisible(true);
+    const timer = setTimeout(() => handleClose(), duration);
+    return () => clearTimeout(timer);
+  }, [duration, handleClose]);
 
   const icons = {
     success: faCheckCircle,
@@ -58,65 +39,71 @@ const Toast = ({
     info: faInfoCircle,
   };
 
-  const colors = {
-    success: 'bg-green-600/90 border-green-700',
-    error: 'bg-red-600/90 border-red-700',
-    warning: 'bg-yellow-600/90 border-yellow-700',
-    info: 'bg-pr-cyan/90 border-cyan-700',
-  };
-
-  const iconColors = {
-    success: 'text-green-300',
-    error: 'text-red-300',
-    warning: 'text-yellow-300',
-    info: 'text-cyan-300',
+  // Cores adaptadas para o tema Dark/Cyan do Primeflix
+  const accentColors = {
+    success: 'text-green-400 border-green-500/50 bg-green-500',
+    error: 'text-red-400 border-red-500/50 bg-red-500',
+    warning: 'text-yellow-400 border-yellow-500/50 bg-yellow-500',
+    info: 'text-pr-cyan border-pr-cyan/50 bg-pr-cyan',
   };
 
   const positions = {
-    'top-right': 'top-4 right-4',
-    'top-left': 'top-4 left-4',
-    'bottom-right': 'bottom-4 right-4',
-    'bottom-left': 'bottom-4 left-4',
-    'top-center': 'top-4 left-1/2 transform -translate-x-1/2',
-    'bottom-center': 'bottom-4 left-1/2 transform -translate-x-1/2',
+    'top-right': 'top-6 right-6',
+    'top-left': 'top-6 left-6',
+    'bottom-right': 'bottom-6 right-6',
+    'bottom-left': 'bottom-6 left-6',
+    'top-center': 'top-6 left-1/2 -translate-x-1/2',
+    'bottom-center': 'bottom-6 left-1/2 -translate-x-1/2',
   };
 
   return (
     <div 
-      className={`fixed ${positions[position]} z-50 transition-all duration-300 ease-in-out
-                 ${isVisible ? (isExiting ? 'opacity-0 scale-95' : 'opacity-100 scale-100') : 'opacity-0 scale-95'}`}
+      className={`fixed ${positions[position]} z-[200] transition-all duration-300 ease-out
+                 ${isVisible && !isExiting ? 'translate-y-0 opacity-100 scale-100' : 'translate-y-2 opacity-0 scale-95'}`}
       role="alert"
-      aria-live="assertive"
-      aria-atomic="true"
-      onMouseEnter={handleMouseEnter}
-      onMouseLeave={() => {}}
     >
-      <div 
-        className={`flex items-start max-w-sm rounded-lg border shadow-2xl backdrop-blur-lg
-                   ${colors[type]} text-white overflow-hidden`}
-      >
-        {/* Ícone */}
-        <div className={`flex-shrink-0 p-3 ${iconColors[type]}`}>
-          <FontAwesomeIcon icon={icons[type]} className="text-xl" />
+      <div className="relative flex items-center min-w-[320px] max-w-md bg-pr-black/90 backdrop-blur-xl border border-white/10 rounded-2xl shadow-[0_20px_40px_rgba(0,0,0,0.5)] overflow-hidden">
+        
+        {/* Barra de Progresso Temporal na Base */}
+        <div 
+          className={`absolute bottom-0 left-0 h-[3px] opacity-40 ${accentColors[type].split(' ')[2]}`}
+          style={{ 
+            width: '100%', 
+            animation: `shrink ${duration}ms linear forwards` 
+          }}
+        />
+
+        {/* Ícone com Glow sutil */}
+        <div className={`p-4 ${accentColors[type].split(' ')[0]}`}>
+          <FontAwesomeIcon icon={icons[type]} className="text-xl drop-shadow-[0_0_8px_currentColor]" />
         </div>
         
-        {/* Conteúdo */}
-        <div className="flex-grow p-3 pr-2">
+        {/* Conteúdo com Tipografia do Sistema */}
+        <div className="flex-grow py-4 pr-2">
           {title && (
-            <h3 className="font-bold text-sm mb-1">{title}</h3>
+            <h3 className="text-[11px] font-black uppercase tracking-[0.2em] text-white mb-1">
+              {title}
+            </h3>
           )}
-          <p className="text-sm">{message}</p>
+          <p className="text-sm text-pr-gray-light font-medium">{message}</p>
         </div>
         
         {/* Botão de fechar */}
         <button
           onClick={handleClose}
-          className="flex-shrink-0 p-2 text-white/70 hover:text-white transition-colors"
-          aria-label="Fechar notificação"
+          className="p-4 text-pr-gray hover:text-white transition-colors"
+          aria-label="Fechar"
         >
-          <FontAwesomeIcon icon={faXmark} className="text-sm" />
+          <FontAwesomeIcon icon={faXmark} className="text-xs" />
         </button>
       </div>
+
+      <style>{`
+        @keyframes shrink {
+          from { width: 100%; }
+          to { width: 0%; }
+        }
+      `}</style>
     </div>
   );
 };
