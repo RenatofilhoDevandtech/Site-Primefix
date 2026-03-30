@@ -1,0 +1,34 @@
+{
+  "featuredSection": {
+    "image": "src/assets/banners/banner-hero.png",
+    "title": "Aproveite na sua TV",
+    "description": "Assista em Smart TVs, PlayStation, Xbox, Chromecast, Apple TV, aparelhos de Blu-ray e outros dispositivos.",
+    "price": "Planos free Crie sua Conta"
+  },
+  "promoCards": [
+    {
+      "id": 1,
+      "title": "Assista onde quiser",
+      "subtitle": "Celular, tablet ou PC.",
+      "image": "src/assets/banners/banner-assistir.png"
+    },
+    {
+      "id": 2,
+      "title": "Crie perfis",
+      "subtitle": "Para toda a família.",
+      "image": "src/assets/banners/banner-crie-perfil.png"
+    },
+    {
+      "id": 3,
+      "title": "Download",
+      "subtitle": "Assista offline.",
+      "image": "src/assets/banners/banner-baixar.png"
+    },
+    {
+      "id": 4,
+      "title": "Sem limites",
+      "subtitle": "Cancele quando quiser.",
+      "image": "src/assets/banners/banner-sem-limites.png"
+    }
+  ]
+}
