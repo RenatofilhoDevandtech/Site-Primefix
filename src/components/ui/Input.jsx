@@ -1,7 +1,6 @@
-/* eslint-disable react/prop-types */
 import { forwardRef } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faEye, faEyeSlash, faTimesCircle } from '@fortawesome/free-solid-svg-icons';
+import { faEye, faEyeSlash, faTimesCircle, faCheckCircle, faExclamationCircle } from '@fortawesome/free-solid-svg-icons';
 
 const Input = forwardRef(({ 
   type = 'text', 
@@ -16,128 +15,105 @@ const Input = forwardRef(({
   onClear,
   ...props 
 }, ref) => {
-  // Classes base focadas em clareza, consistência e um estado de foco premium.
+
+  // Fundo mais escuro para contraste com o BackgroundGlow e bordas arredondadas modernas
   const baseClasses = `
-    w-full bg-pr-gray-dark border rounded-lg
-    text-pr-gray-light placeholder:text-pr-gray 
-    transition-all duration-300
-    focus:outline-none focus:ring-2
-    disabled:opacity-50 disabled:bg-pr-border disabled:cursor-not-allowed
-    read-only:bg-pr-border read-only:cursor-not-allowed
+    w-full bg-pr-black/40 border backdrop-blur-sm
+    text-white placeholder:text-pr-gray/60 
+    transition-all duration-300 ease-out
+    focus:outline-none focus:ring-4
+    disabled:opacity-40 disabled:cursor-not-allowed
+    read-only:opacity-60
   `;
 
-  // Classes de tamanho
   const sizeClasses = {
-    sm: 'px-3 py-1.5 text-sm',
-    md: 'px-4 py-3 text-base',
-    lg: 'px-5 py-4 text-lg'
+    sm: 'px-3 py-2 text-xs',
+    md: 'px-4 py-3 text-sm',
+    lg: 'px-5 py-4 text-base'
   };
 
-  // Classes de variante
   const variantClasses = {
     default: `
-      border-pr-border 
-      focus:border-pr-cyan focus:ring-pr-cyan/50
+      border-white/10 
+      focus:border-pr-cyan focus:ring-pr-cyan/10
     `,
     error: `
-      border-red-500
-      focus:border-red-500 focus:ring-red-500/50
+      border-red-500/50 
+      focus:border-red-500 focus:ring-red-500/10
     `,
     success: `
-      border-green-500
-      focus:border-green-500 focus:ring-green-500/50
+      border-green-500/50 
+      focus:border-green-500 focus:ring-green-500/10
     `,
     search: `
-      border-pr-border rounded-full
-      focus:border-pr-cyan focus:ring-pr-cyan/50
+      border-white/10 rounded-full bg-white/5
+      focus:border-pr-cyan focus:ring-pr-cyan/10
     `
   };
 
-  // Combinar todas as classes
   const inputClasses = `
     ${baseClasses}
     ${sizeClasses[size]}
     ${variantClasses[error ? 'error' : success ? 'success' : variant]}
+    ${iconLeft ? 'pl-11' : ''}
+    ${(iconRight || clearable || type === 'password' || error || success) ? 'pr-11' : ''}
     ${className}
   `;
 
-  // Renderizar ícone esquerdo se fornecido
-  const renderIconLeft = () => {
-    if (iconLeft) {
-      return (
-        <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-          <FontAwesomeIcon icon={iconLeft} className="text-pr-gray" />
-        </div>
-      );
-    }
-    return null;
-  };
-
-  // Renderizar ícone direito ou botão de limpar
-  const renderIconRight = () => {
-    if (clearable && props.value && !props.disabled) {
-      return (
-        <button
-          type="button"
-          onClick={onClear}
-          className="absolute inset-y-0 right-0 pr-3 flex items-center text-pr-gray hover:text-pr-gray-light transition-colors"
-          aria-label="Limpar campo"
-        >
-          <FontAwesomeIcon icon={faTimesCircle} />
-        </button>
-      );
-    }
-    
-    if (iconRight) {
-      return (
-        <div className="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
-          <FontAwesomeIcon icon={iconRight} className="text-pr-gray" />
-        </div>
-      );
-    }
-    
-    // Ícone para mostrar/ocultar senha
-    if (type === 'password') {
-      return (
-        <button
-          type="button"
-          className="absolute inset-y-0 right-0 pr-3 flex items-center text-pr-gray hover:text-pr-gray-light transition-colors"
-          onClick={props.onTogglePasswordVisibility}
-          aria-label={props.showPassword ? 'Ocultar senha' : 'Mostrar senha'}
-        >
-          <FontAwesomeIcon icon={props.showPassword ? faEyeSlash : faEye} />
-        </button>
-      );
-    }
-    
-    return null;
-  };
-
-  // Ajustar padding quando há ícones
-  const paddingClasses = `
-    ${iconLeft ? 'pl-10' : ''}
-    ${iconRight || clearable || type === 'password' ? 'pr-10' : ''}
-  `;
-
   return (
-    <div className="w-full">
-      <div className="relative">
-        {renderIconLeft()}
+    <div className="w-full group">
+      <div className="relative flex items-center">
+        
+        {/* Ícone Esquerdo */}
+        {iconLeft && (
+          <div className="absolute left-4 text-pr-gray group-focus-within:text-pr-cyan transition-colors duration-300">
+            <FontAwesomeIcon icon={iconLeft} />
+          </div>
+        )}
         
         <input
           ref={ref}
           type={type}
-          className={`${inputClasses} ${paddingClasses}`}
+          className={inputClasses}
           {...props}
         />
         
-        {renderIconRight()}
+        {/* Ícones de Estado e Ações à Direita */}
+        <div className="absolute right-4 flex items-center gap-2">
+          {clearable && props.value && !props.disabled && (
+            <button
+              type="button"
+              onClick={onClear}
+              className="text-pr-gray hover:text-white transition-colors"
+              aria-label="Limpar"
+            >
+              <FontAwesomeIcon icon={faTimesCircle} />
+            </button>
+          )}
+          
+          {type === 'password' && (
+            <button
+              type="button"
+              className="text-pr-gray hover:text-pr-cyan transition-colors"
+              onClick={props.onTogglePasswordVisibility}
+            >
+              <FontAwesomeIcon icon={props.showPassword ? faEyeSlash : faEye} />
+            </button>
+          )}
+
+          {iconRight && !error && !success && (
+            <FontAwesomeIcon icon={iconRight} className="text-pr-gray" />
+          )}
+
+          {error && <FontAwesomeIcon icon={faExclamationCircle} className="text-red-500 animate-pulse" />}
+          {success && <FontAwesomeIcon icon={faCheckCircle} className="text-green-500" />}
+        </div>
       </div>
       
-      {/* Mensagem de erro ou sucesso */}
-      {(error || success) && (
-        <p className={`mt-2 text-sm ${error ? 'text-red-500' : 'text-green-500'}`}>
-          {error || (success && 'Campo válido!')}
+      {/* Mensagem de Feedback com Animação */}
+      {error && (
+        <p className="mt-1.5 ml-1 text-[11px] font-bold uppercase tracking-wider text-red-500 animate-fade-in-fast">
+          {error}
         </p>
       )}
     </div>
