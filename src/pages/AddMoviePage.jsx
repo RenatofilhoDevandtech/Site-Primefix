@@ -3,6 +3,8 @@ import { useNavigate } from 'react-router-dom';
 import { useMovies } from '../contexts/MovieContext';
 import MovieForm from '../components/features/MovieForm';
 import Toast from '../components/ui/Toast';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faChevronLeft, faPlusCircle } from '@fortawesome/free-solid-svg-icons';
 
 const AddMoviePage = () => {
   const navigate = useNavigate();
@@ -12,100 +14,94 @@ const AddMoviePage = () => {
 
   const showToast = (message, type = 'info') => {
     setToast({ show: true, message, type });
-    setTimeout(() => setToast({ show: false, message: '', type: 'info' }), 4000);
+    // Reset automático do toast
+    setTimeout(() => setToast(prev => ({ ...prev, show: false })), 3000);
   };
 
   const handleAddMovie = async (movieData) => {
     setIsSubmitting(true);
     try {
-      // Validação adicional dos dados
+      // 1. Validação Básica
       if (!movieData.title || !movieData.poster_path) {
-        throw new Error('Título e URL da imagem são obrigatórios');
+        throw new Error('Título e Imagem (URL) são obrigatórios');
       }
 
-      // Validar URL da imagem
-      try {
-        new URL(movieData.poster_path);
-      } catch {
-        throw new Error('URL da imagem é inválida');
-      }
-
-      // Adicionar metadados adicionais
+      // 2. Preparação do Objeto (Normalização)
       const movieWithMetadata = {
         ...movieData,
+        // Geramos um ID numérico para manter compatibilidade com a lógica de API
+        id: Date.now(), 
         addedAt: new Date().toISOString(),
-        isUserAdded: true,
-        // Garantir que a avaliação seja um número
-        vote_average: movieData.vote_average ? parseFloat(movieData.vote_average) : null,
-        // Garantir que a duração seja um número
-        runtime: movieData.runtime ? parseInt(movieData.runtime) : null
+        isUserAdded: true, // Tag para identificar filmes manuais
+        vote_average: movieData.vote_average ? parseFloat(movieData.vote_average) : 0,
+        runtime: movieData.runtime ? parseInt(movieData.runtime) : 0,
+        // Garantimos que campos de texto não venham nulos
+        overview: movieData.overview || 'Sem descrição informada.',
+        genres: movieData.genre ? [{ name: movieData.genre }] : []
       };
 
+      // 3. Persistência via Contexto
       await addMovie(movieWithMetadata);
       
-      // Feedback de sucesso
-      showToast('Filme adicionado com sucesso!', 'success');
+      showToast('Título adicionado à sua coleção!', 'success');
       
-      // Redirecionar após um breve delay para mostrar o toast
-      setTimeout(() => {
-        navigate('/my-list');
-      }, 1500);
+      // Delay estratégico para o usuário ver o feedback antes de mudar de tela
+      setTimeout(() => navigate('/my-list'), 1500);
       
     } catch (error) {
-      console.error("Falha ao adicionar o filme:", error);
-      showToast(error.message || 'Erro ao adicionar filme. Tente novamente.', 'error');
+      console.error("Falha ao adicionar:", error);
+      showToast(error.message || 'Erro ao processar dados.', 'error');
     } finally {
       setIsSubmitting(false);
     }
   };
 
-  const handleCancel = () => {
-    navigate(-1); // Volta para a página anterior
-  };
-
   return (
-    <div className="min-h-screen py-12 md:py-16 bg-gradient-to-b from-pr-black to-pr-gray-dark/30 animate-fade-in">
-      <div className="max-w-2xl mx-auto px-4">
-        {/* Cabeçalho com botão de voltar */}
-        <div className="flex items-center mb-8">
+    <main className="min-h-screen pt-28 pb-16 bg-pr-black selection:bg-pr-cyan">
+      <div className="max-w-2xl mx-auto px-6">
+        
+        {/* Header - Identidade Visual Siteprime */}
+        <header className="flex flex-col items-center text-center mb-10">
           <button
-            onClick={handleCancel}
-            className="flex items-center text-pr-gray hover:text-pr-cyan transition-colors mr-4"
+            onClick={() => navigate(-1)}
+            className="self-start mb-6 flex items-center gap-2 text-pr-gray hover:text-white transition-colors group"
           >
-            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-            </svg>
+            <FontAwesomeIcon icon={faChevronLeft} className="group-hover:-translate-x-1 transition-transform" />
+            Voltar
           </button>
-          <h1 
-            className="text-3xl md:text-4xl font-bold bg-gradient-to-br from-white to-pr-gray bg-clip-text text-transparent"
-          >
-            Adicionar Novo Título
+          
+          <div className="bg-pr-cyan/10 p-4 rounded-full mb-4">
+            <FontAwesomeIcon icon={faPlusCircle} className="text-3xl text-pr-cyan" />
+          </div>
+          
+          <h1 className="text-4xl font-black italic tracking-tighter text-white mb-2 uppercase">
+            Novo <span className="text-pr-cyan">Título</span>
           </h1>
+          <p className="text-pr-gray-light max-w-xs">
+            Personalize sua lista adicionando filmes que não encontrou no catálogo oficial.
+          </p>
+        </header>
+        
+        {/* Card do Formulário */}
+        <div className="bg-pr-gray-dark/20 border border-white/5 p-8 rounded-3xl backdrop-blur-sm shadow-2xl">
+          <MovieForm 
+            onSubmit={handleAddMovie} 
+            isSubmitting={isSubmitting}
+            buttonText={isSubmitting ? 'Salvando...' : 'Adicionar à Minha Lista'}
+            onCancel={() => navigate(-1)}
+          />
         </div>
-        
-        {/* Descrição */}
-        <p className="text-pr-gray mb-8 text-center max-w-md mx-auto">
-          Adicione um novo título à sua coleção pessoal. Preencha todas as informações para uma melhor experiência.
-        </p>
-        
-        {/* Formulário */}
-        <MovieForm 
-          onSubmit={handleAddMovie} 
-          isSubmitting={isSubmitting}
-          buttonText={isSubmitting ? 'Adicionando...' : 'Adicionar Filme'}
-          onCancel={handleCancel}
-        />
       </div>
 
-      {/* Toast de notificação */}
+      {/* Notificação flutuante */}
       {toast.show && (
         <Toast 
           message={toast.message} 
           type={toast.type} 
-          onClose={() => setToast({ show: false, message: '', type: 'info' })}
+          onClose={() => setToast({ ...toast, show: false })}
         />
       )}
-    </div>
+    </main>
   );
 };
 
