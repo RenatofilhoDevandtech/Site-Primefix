@@ -1,120 +1,122 @@
 import { useState } from 'react';
-import PropTypes from 'prop-types';
+import { Swiper, SwiperSlide } from 'swiper/react';
+import { Autoplay, EffectFade, Navigation, Pagination } from 'swiper/modules';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-// Todos estes ícones serão usados no JSX abaixo
-import { faPlay, faInfoCircle, faPlus, faVolumeOff, faVolumeUp, faChevronLeft, faChevronRight } from '@fortawesome/free-solid-svg-icons';
-import { useHeroCarousel } from '../../hooks/useHeroCarousel';
+import { faPlay, faInfoCircle, faPlus, faVolumeMute, faVolumeUp } from '@fortawesome/free-solid-svg-icons';
+import { useNavigate } from 'react-router-dom';
 
-// --- Micro-Componente para o Fundo (Vídeo/Imagem) ---
-const HeroBackground = ({ item, isMuted }) => {
-  const [hasVideoError, setHasVideoError] = useState(false);
-  const videoUrl = item.video_key && !hasVideoError
-    ? `https://www.youtube.com/embed/${item.video_key}?autoplay=1&mute=${isMuted ? 1 : 0}&controls=0&loop=1&playlist=${item.video_key}&playsinline=1&enablejsapi=1&modestbranding=1&rel=0`
-    : null;
+// Import Swiper styles
+import 'swiper/css';
+import 'swiper/css/effect-fade';
+import 'swiper/css/navigation';
+import 'swiper/css/pagination';
 
-  return (
-    <>
-      <div className="absolute inset-0 transition-opacity duration-1000" style={{ opacity: videoUrl ? 0 : 1 }}>
-        <img src={`https://image.tmdb.org/t/p/original${item.backdrop_path}`} alt={item.title} className="w-full h-full object-cover" />
-      </div>
-      {videoUrl && (
-        <iframe
-          className="absolute top-1/2 left-1/2 w-[120vw] h-[120vh] -translate-x-1/2 -translate-y-1/2 pointer-events-none"
-          src={videoUrl}
-          title={item.title}
-          frameBorder="0"
-          allow="autoplay; encrypted-media"
-          onError={() => setHasVideoError(true)}
-        />
-      )}
-    </>
-  );
-};
-
-// --- Componente Principal ---
 const HeroCarousel = ({ movies, onAddToList }) => {
-  // Todas estas variáveis do hook serão usadas
-  const { currentIndex, isHovering, goToNext, goToPrevious, setIsHovering } = useHeroCarousel(movies.length);
+  const navigate = useNavigate();
   const [isMuted, setIsMuted] = useState(true);
 
-  if (!movies || movies.length === 0) {
-    return (
-      <div className="h-screen w-full flex items-center justify-center bg-pr-black">
-        <div className="w-16 h-16 border-4 border-pr-cyan border-t-transparent rounded-full animate-spin"></div>
-      </div>
-    );
-  }
-
-  const currentItem = movies[currentIndex];
+  if (!movies || movies.length === 0) return null;
 
   return (
-    <div
-      className="relative h-screen w-full overflow-hidden bg-pr-black group"
-      onMouseEnter={() => setIsHovering(true)}
-      onMouseLeave={() => setIsHovering(false)}
-    >
-      <HeroBackground item={currentItem} isMuted={isMuted} />
+    <section className="relative h-screen w-full bg-pr-black overflow-hidden group">
+      <Swiper
+        modules={[Autoplay, EffectFade, Navigation, Pagination]}
+        effect="fade"
+        speed={1000}
+        loop={true}
+        autoplay={{ delay: 8000, disableOnInteraction: false }}
+        pagination={{ clickable: true, dynamicBullets: true }}
+        navigation={{
+          nextEl: '.swiper-button-next-custom',
+          prevEl: '.swiper-button-prev-custom',
+        }}
+        className="h-full w-full"
+      >
+        {movies.slice(0, 6).map((movie) => (
+          <SwiperSlide key={movie.id} className="relative">
+            {/* Background Imersivo */}
+            <div className="absolute inset-0">
+              <img 
+                src={movie.backdropUrl} 
+                alt={movie.title}
+                loading="eager"
+                className="w-full h-full object-cover object-top transform scale-105 animate-slow-zoom"
+              />
+              {/* Overlays de Cinema */}
+              <div className="absolute inset-0 bg-gradient-to-r from-pr-black via-pr-black/40 to-transparent z-10" />
+              <div className="absolute inset-0 bg-gradient-to-t from-pr-black via-transparent to-transparent z-10" />
+            </div>
 
-      <div className="absolute inset-0 bg-gradient-to-t from-pr-black via-transparent" />
-      <div className="absolute inset-0 bg-gradient-to-r from-pr-black via-pr-black/50 to-transparent" />
-      
-      <div className="absolute bottom-[20%] left-4 md:left-12 lg:left-16 z-10 w-full max-w-lg">
-        <div key={currentIndex} className="animate-fade-in-up">
-          <h2 className="text-4xl md:text-5xl lg:text-7xl font-black text-white drop-shadow-lg mb-4">{currentItem.title}</h2>
-          <p className="hidden md:block text-pr-gray-light text-lg mb-6 line-clamp-3">{currentItem.overview}</p>
-          <div className="flex items-center gap-3">
-             <button className="flex items-center justify-center px-6 py-2.5 rounded-md bg-white text-black font-bold hover:bg-white/90 transition transform hover:scale-105">
-                <FontAwesomeIcon icon={faPlay} className="mr-2" /> Assistir
-             </button>
-             <button className="flex items-center justify-center px-6 py-2.5 rounded-md bg-black/40 text-white backdrop-blur-sm hover:bg-white/20 transition transform hover:scale-105">
-                <FontAwesomeIcon icon={faInfoCircle} className="mr-2" /> Detalhes
-             </button>
-             <button onClick={() => onAddToList(currentItem)} className="flex items-center justify-center w-12 h-12 rounded-full bg-black/40 text-white backdrop-blur-sm hover:bg-white/20 border border-white/40 transition transform hover:scale-110">
-                <FontAwesomeIcon icon={faPlus} />
-             </button>
-          </div>
-        </div>
-      </div>
-      
-      <div className="absolute bottom-4 right-4 md:right-12 lg:right-16 z-10">
-        <button 
-          onClick={() => setIsMuted(prev => !prev)}
-          className="flex items-center justify-center w-12 h-12 rounded-full bg-black/40 hover:bg-white/20 border border-white/40 text-white backdrop-blur-sm transition transform hover:scale-110"
-          aria-label={isMuted ? 'Ativar som' : 'Desativar som'}
-        >
-          <FontAwesomeIcon icon={isMuted ? faVolumeOff : faVolumeUp} size="lg" />
-        </button>
+            {/* Conteúdo do Filme */}
+            <div className="relative z-20 h-full flex flex-col justify-center px-6 md:px-16 lg:px-24">
+              <div className="max-w-4xl space-y-6 animate-fade-in-up">
+                
+                <div className="flex items-center gap-3">
+                   <span className="bg-pr-cyan text-pr-black text-[10px] font-black px-2 py-1 rounded-sm uppercase tracking-tighter shadow-cyan-glow">
+                     Destaque Primeflix
+                   </span>
+                   <span className="text-white/70 text-sm font-bold">
+                     ⭐ {movie.vote_average?.toFixed(1)} Rating
+                   </span>
+                </div>
+
+                <h2 className="text-5xl md:text-8xl font-black text-white uppercase tracking-tighter leading-[0.8] drop-shadow-2xl">
+                  {movie.title}
+                </h2>
+
+                <p className="hidden md:block text-pr-gray-light text-lg md:text-xl max-w-2xl line-clamp-3 font-medium opacity-90">
+                  {movie.overview}
+                </p>
+
+                {/* Botões de Ação */}
+                <div className="flex items-center gap-4 pt-4">
+                  <button 
+                    onClick={() => navigate(`/movie/${movie.id}`)}
+                    className="flex items-center gap-3 px-8 py-4 bg-white text-pr-black font-black rounded-xl hover:bg-pr-cyan transition-all duration-300 transform hover:scale-105 shadow-xl"
+                  >
+                    <FontAwesomeIcon icon={faPlay} />
+                    ASSISTIR AGORA
+                  </button>
+
+                  <button 
+                    onClick={() => navigate(`/movie/${movie.id}`)}
+                    className="flex items-center gap-3 px-8 py-4 bg-black/40 text-white font-black rounded-xl backdrop-blur-md border border-white/20 hover:bg-white/10 transition-all duration-300"
+                  >
+                    <FontAwesomeIcon icon={faInfoCircle} />
+                    DETALHES
+                  </button>
+
+                  <button 
+                    onClick={() => onAddToList(movie)}
+                    className="w-14 h-14 flex items-center justify-center rounded-full bg-white/10 text-white border border-white/20 hover:bg-pr-cyan hover:text-pr-black transition-all duration-500"
+                  >
+                    <FontAwesomeIcon icon={faPlus} size="lg" />
+                  </button>
+                </div>
+              </div>
+            </div>
+          </SwiperSlide>
+        ))}
+      </Swiper>
+
+      {/* Controles Customizados (Aparecem no Hover) */}
+      <div className="absolute bottom-10 right-10 z-30 flex items-center gap-6">
+         {/* Mute Button */}
+         <button 
+           onClick={() => setIsMuted(!isMuted)}
+           className="w-12 h-12 rounded-full border border-white/20 flex items-center justify-center text-white hover:bg-pr-cyan hover:text-pr-black transition-all"
+         >
+           <FontAwesomeIcon icon={isMuted ? faVolumeMute : faVolumeUp} />
+         </button>
       </div>
 
-      <div className="absolute bottom-10 left-0 right-0 z-20 px-4 md:px-12 lg:px-16 flex justify-center items-center">
-        <div className="w-full max-w-xs h-0.5 bg-white/20 rounded-full overflow-hidden">
-          <div
-            key={currentIndex}
-            className="h-full bg-white"
-            // 'isHovering' é usado aqui para pausar a animação
-            style={{ animation: `progress-bar 10s linear`, animationPlayState: isHovering ? 'paused' : 'running' }}
-          />
-        </div>
-      </div>
-
-      {movies.length > 1 && (
-        <>
-          <button onClick={goToPrevious} aria-label="Anterior" className="absolute left-0 top-0 bottom-0 w-16 text-white opacity-0 group-hover:opacity-100 transition-opacity z-20"><FontAwesomeIcon icon={faChevronLeft} size="2x" /></button>
-          <button onClick={goToNext} aria-label="Próximo" className="absolute right-0 top-0 bottom-0 w-16 text-white opacity-0 group-hover:opacity-100 transition-opacity z-20"><FontAwesomeIcon icon={faChevronRight} size="2x" /></button>
-        </>
-      )}
-    </div>
+      {/* Estilização das Bullets do Swiper */}
+      <style>{`
+        .swiper-pagination-bullet { background: white !important; opacity: 0.3; width: 12px; height: 12px; }
+        .swiper-pagination-bullet-active { background: #00F2FE !important; opacity: 1; width: 30px; border-radius: 6px; }
+      `}</style>
+    </section>
   );
-};
-
-HeroCarousel.propTypes = {
-  movies: PropTypes.arrayOf(PropTypes.object).isRequired,
-  onAddToList: PropTypes.func.isRequired,
-};
-
-HeroBackground.propTypes = {
-  item: PropTypes.object.isRequired,
-  isMuted: PropTypes.bool.isRequired,
 };
 
 export default HeroCarousel;
