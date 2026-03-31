@@ -1,231 +1,95 @@
-<!-- Título -->
+<div align="center">
+  <img src="https://raw.githubusercontent.com/RenatofilhoDevandtech/RenatofilhoDevandtech/main/assets/primeflix-banner.png" alt="PrimeFlix Banner" width="100%" />
 
-<h1 align="center">PRIMEFIX</h1>
-<p align="center">
-  <img width="200" height="200" alt="Logo" src="https://github.com/user-attachments/assets/6777aa0e-60c0-4375-81b2-efee728c43b3" />
-    <h1 align="center">PRIMEFIX</h1>
-</p>
+  # 🎬 PRIMEFLIX: A Nova Fronteira do Streaming
+  
+  **Onde a Engenharia de Software encontra a Psicologia do Design.**
+  
+  <br />
 
-<p align="center">
-  <img src="https://img.shields.io/badge/-React-333333?style=flat&logo=react" />
-  <img src="https://img.shields.io/badge/-Git-333333?style=flat&logo=git" />
-  <img src="https://img.shields.io/badge/-GitHub-333333?style=flat&logo=github" />
-  <img src="https://img.shields.io/badge/-Visual%20Studio%20Code-333333?style=flat&logo=visual-studio-code&logoColor=007ACC" />
-  <img src="https://img.shields.io/badge/-TMDB%20API-333333?style=flat&logo=themoviedatabase" />
-  <img src="https://img.shields.io/badge/-TailwindCSS-333333?style=flat&logo=tailwindcss" />
-  <img src="https://img.shields.io/badge/-Vite-333333?style=flat&logo=vite" />
-</p>
+  [![React](https://img.shields.io/badge/React-18-61DAFB?style=for-the-badge&logo=react&logoColor=black)](https://react.dev/)
+  [![Vite](https://img.shields.io/badge/Vite-5.0-646CFF?style=for-the-badge&logo=vite&logoColor=white)](https://vitejs.dev/)
+  [![Tailwind](https://img.shields.io/badge/Tailwind-3.0-38B2AC?style=for-the-badge&logo=tailwind-css&logoColor=white)](https://tailwindcss.com/)
+  [![TMDB](https://img.shields.io/badge/TMDB-API-01B4E4?style=for-the-badge&logo=the-movie-database&logoColor=white)](https://www.themoviedb.org/)
 
-<h2 align="center">🎬 PrimeFlix Moderno</h2>
-
-## Sobre
-<p align="center">
-  PrimeFlix Moderno é uma aplicação de streaming premium, pensada para entregar uma experiência fluida, envolvente e visualmente marcante.  
-Cada detalhe — da arquitetura ao design — foi cuidadosamente planejado para refletir excelência técnica, usabilidade refinada e uma identidade visual coerente com plataformas de entretenimento de alto nível.
-</p>
-<p align="center">
-<img width="1891" height="881" alt="telaprimefix" src="https://github.com/user-attachments/assets/610aa910-723f-4309-8d5a-51d732590726" />
-<img width="1858" height="965" alt="explorar filmes" src="https://github.com/user-attachments/assets/b46ef5bb-97a3-4538-b183-4b410c71acb4" />
-</p>
+</div>
 
 ---
 
-## 📌 Pitch para Recrutadores
+## 🌟 Visão e Filosofia: "Roube como um Artista"
 
-- ✅ Domínio técnico completo: arquitetura escalável, componentes reutilizáveis, performance otimizada  
-- ✅ Visão de produto: cada decisão foi pensada para entregar valor real ao usuário  
-- ✅ Uso estratégico de IA: aceleração com Copilot e Gemini, sem abrir mão da autoria e qualidade  
-- ✅ Design e UX refinados: interface fluida, estética minimalista e heurísticas de Nielsen aplicadas  
-- ✅ Organização impecável: estrutura de pastas clara, documentação completa e código limpo  
+O PrimeFlix não é uma cópia. É uma **evolução deliberada**. 
 
----
+Baseado na metodologia do livro *"Roube como um Artista"* de Austin Kleon, analisamos as melhores funcionalidades do **Netflix**, **Prime Video** e **Disney+** para construir algo superior em termos de experiência de aprendizado e UX:
 
-## 🧠 Visão Estratégica
-
-PrimeFlix Moderno é mais que uma aplicação React. É uma demonstração clara de engenharia de produto moderna, onde cada componente, cada decisão e cada linha de código foram pensadas para:
-
-- Encantar o usuário com uma experiência fluida, imersiva e visualmente harmônica  
-- Impressionar recrutadores com organização, clareza arquitetural e domínio técnico  
-- Mostrar como IA pode acelerar sem comprometer qualidade, visão ou autoria  
+- 🧠 **Cerebral (Netflix)**: Navegação baseada em padrões mentais pré-existentes do usuário.
+- ⚡ **Veloz (Prime Video)**: Abstração de metadados e performance de carregamento.
+- ✨ **Imersivo (Disney+)**: Paleta de cores baseada na psicologia do entretenimento profundo.
 
 ---
 
-## ⚙️ Tecnologias Utilizadas
+## 🚀 Funcionalidades de Elite
 
-| Tecnologia            | Finalidade                                      |
-|-----------------------|-------------------------------------------------|
-| React 18              | UI declarativa e componentizada                |
-| Vite                  | Bundler moderno e ultra-rápido                 |
-| TailwindCSS           | Estilização utilitária e responsiva            |
-| Styled Components     | Estilo dinâmico por componente                 |
-| Axios                 | Requisições HTTP com interceptadores           |
-| React Router DOM      | Navegação SPA com rotas dinâmicas              |
-| FontAwesome           | Ícones acessíveis e modernos                   |
-| ESLint + Plugins      | Padronização e qualidade de código             |
+### 🌌 Interface Ultra-Premium
+Construída sobre o **Deep Black (#050505)** para eliminar distrações e o **Cyan Glow (#00f2fe)** para guiar o olhar sem esforço cognitivo.
 
----
+### 🌡️ UX Emocional (Weather Awareness)
+O sistema adapta sua saudação com base na sua localização e clima real. 
+> *"Chovendo aí? Melhor ficar em casa e assistir algo."* — O software entende o contexto do usuário.
 
-## 📁 Estrutura de Pastas
-
-```bash
-/primeflix-moderno
-├── src/
-│   ├── assets/                         # Imagens, ícones e arquivos estáticos
-│   ├── components/                     # Componentes reutilizáveis da aplicação
-│   │   ├── common/                     # Elementos visuais globais
-│   │   │   ├── BackgroundGlow.jsx
-│   │   │   ├── LoadingSpinner.jsx
-│   │   │   └── ScrollProgress.jsx
-│   │   ├── features/                   # Componentes com funcionalidades específicas
-│   │   │   ├── ConfirmationModal.jsx
-│   │   │   ├── CookieConsentBanner.jsx
-│   │   │   ├── HeroCarousel.jsx
-│   │   │   ├── MovieCarousel.jsx
-│   │   │   └── MovieForm.jsx
-│   │   ├── layout/                     # Estrutura visual da aplicação
-│   │   │   ├── Footer/
-│   │   │   │   ├── BackToTopButton.jsx
-│   │   │   │   ├── footer.data.js
-│   │   │   │   ├── FooterLinkColumn.jsx
-│   │   │   │   ├── NewsletterForm.jsx
-│   │   │   │   └── SocialLinks.jsx
-│   │   │   ├── Header/
-│   │   │   │   ├── header.data.js
-│   │   │   │   ├── MobileMenu.jsx
-│   │   │   │   ├── NavLinks.jsx
-│   │   │   │   ├── ProfileDropdown.jsx
-│   │   │   │   └── Search.jsx
-│   │   │   ├── Footer.jsx
-│   │   │   ├── Header.jsx
-│   │   │   └── RootLayout.jsx
-│   │   ├── ui/                         # Componentes visuais genéricos e reutilizáveis
-│   │   │   ├── MovieCard/
-│   │   │   │   ├── CardHoverOverlay.jsx
-│   │   │   │   ├── CardImage.jsx
-│   │   │   │   └── useMovieCardLogic.js
-│   │   │   ├── Button.jsx
-│   │   │   ├── ErrorDisplay.jsx
-│   │   │   ├── Input.jsx
-│   │   │   ├── LoadingSkeleton.jsx
-│   │   │   ├── MovieCard.jsx
-│   │   │   ├── Spinner.jsx
-│   │   │   └── Toast.jsx
-│   ├── contexts/                       # Contextos globais para gerenciamento de estado
-│   │   ├── auth-context.js
-│   │   ├── AuthProvider.jsx
-│   │   ├── MovieContext.jsx
-│   │   └── PageTransitionContext.jsx
-│   ├── hooks/                          # Hooks personalizados
-│   │   ├── useAuth.js
-│   │   ├── useCarouselScroll.js
-│   │   ├── useClickOutside.js
-│   │   ├── useHeroCarousel.js
-│   │   ├── usePageData.js
-│   │   ├── useScroll.js
-│   │   └── useToast.js
-│   ├── pages/                          # Páginas principais da aplicação
-│   │   ├── AddMoviePage.jsx
-│   │   ├── EditMoviePage.jsx
-│   │   ├── HomePage.jsx
-│   │   ├── MoviesPage.jsx
-│   │   ├── MyListPage.jsx
-│   │   ├── NotFoundPage.jsx
-│   │   ├── PlaceholderPage.jsx
-│   │   └── SeriesPage.jsx
-│   ├── services/                       # Lógica de negócio e integração com APIs
-│   │   ├── movieStorageService.js
-│   │   └── tmdbService.js
-│   ├── utils/                          # Funções auxiliares e utilitárias
-│   │   ├── imageUrlBuilder.js
-│   │   └── throttle.js
-│   ├── App.jsx                         # Componente raiz da aplicação
-│   ├── index.css                       # Estilos globais
-│   └── main.jsx                        # Ponto de entrada da aplicação
-├── .env                                # Variáveis de ambiente
-├── package.json                        # Dependências e scripts do projeto
-├── tailwind.config.js                  # Configuração do TailwindCSS
-├── postcss.config.js                   # Configuração do PostCSS
-```
-
----
-## 🧩 Componentes-Chave
-
-### `HeroCarousel.jsx`
-- Destaque visual da home  
-- Navegação fluida e responsiva  
-- Integração com dados dinâmicos  
-
-### `MovieCard.jsx`
-- Exibição de filmes/séries  
-- Design adaptável e acessível  
-- Botões de ação (favoritar, assistir, etc.)  
-
-### `MovieForm.jsx`
-- Formulário para adicionar/editar conteúdo  
-- Validação de campos e UX clara  
-- Feedback visual para erros  
+### 💨 Performance "Instant-Feel"
+- **Skeleton Screens**: Eliminação total do CLS (Cumulative Layout Shift).
+- **Preloading Inteligente**: Imagens e metadados carregados antes mesmo da sua intenção de clique.
+- **Screaming Architecture**: O código está organizado para ser escalável por décadas.
 
 ---
 
-## 🎥 Integração com a API TMDB
+## 🛠️ Stack Tecnológica
 
-Este projeto utiliza a [The Movie Database (TMDB)](https://developer.themoviedb.org/docs) como fonte principal de dados para filmes e séries.  
-A API fornece informações atualizadas e confiáveis, permitindo que a aplicação exiba conteúdos reais com imagens, descrições, avaliações e muito mais.
-
-
-## 🧠 UX com Base nas 10 Heurísticas de Nielsen
-
-Este projeto foi desenhado com base nas 10 heurísticas de usabilidade de Jakob Nielsen:
-
-1. **Visibilidade do status do sistema**  
-2. **Correspondência entre sistema e mundo real**  
-3. **Controle e liberdade do usuário**  
-4. **Consistência e padrões**  
-5. **Prevenção de erros**  
-6. **Reconhecimento em vez de memorização**  
-7. **Flexibilidade e eficiência de uso**  
-8. **Design estético e minimalista**  
-9. **Ajuda para reconhecer e recuperar erros**  
-10. **Ajuda e documentação**
-
-> Cada componente foi avaliado e ajustado com base nessas heurísticas, garantindo uma experiência intuitiva, eficiente e agradável.
+- **Frontend**: React 18 (Hooks & Context API)
+- **Tooling**: Vite (para Builds em alta velocidade)
+- **Estilização**: Tailwind CSS (Abstração de Design System)
+- **API**: TMDB (The Movie Database) para dados em tempo real
+- **Workflow**: Git Flow + IA-Driven Development (AI como copiloto de aprendizado)
 
 ---
 
-## 🔐 Segurança e Performance
+## 📖 Como Rodar o Projeto
 
-- Uso de `.env` para variáveis sensíveis  
-- Prevenção contra XSS e falhas comuns  
-- Lazy loading e code-splitting para otimização  
-- Imagens otimizadas e renderizações controladas  
-
----
-
-## 📦 Scripts Disponíveis
-
-```json
-"scripts": {
-  "dev": "vite",
-  "build": "vite build",
-  "lint": "eslint .",
-  "preview": "vite preview"
-}
-```
-## 📈 Próximos Passos
-
-- Autenticação com Firebase ou OAuth  
-- Sistema de recomendação inteligente  
-- Modo escuro e preferências do usuário  
-- Testes automatizados com Jest + React Testing Library  
+1. Clone o repositório:
+   ```bash
+   git clone https://github.com/RenatofilhoDevandtech/Siteprime-video.git
+   ```
+2. Instale as dependências:
+   ```bash
+   npm install
+   ```
+3. Crie um arquivo `.env` na raiz e adicione sua chave TMDB:
+   ```env
+   VITE_TMDB_API_KEY=sua_chave_aqui
+   ```
+4. Inicie o servidor de desenvolvimento:
+   ```bash
+   npm run dev
+   ```
 
 ---
 
-## 👨‍💻 Sobre o Autor
+## 📜 Licença e Ética
 
-**Renato Filho** — Desenvolvedor Frontend com foco em excelência, usabilidade e arquitetura limpa.  
-Este projeto foi acelerado com IA (Copilot + Gemini), mas cada decisão técnica e visual foi tomada com base em experiência, pesquisa e domínio de boas práticas.
+Este projeto está sob a **[Licença MIT](./LICENSE)**. 
 
-> Mesmo com IA, o domínio é meu.  
-> A arquitetura foi pensada, não gerada.  
-> O design foi alinhado, não improvisado.  
-> O resultado é um projeto que une velocidade, qualidade e visão de produto.
+**Nota Artística**: Os recursos visuais e a lógica de negócio foram inspirados na desconstrução criativa de plataformas existentes. O uso da metodologia "Roubo Criativo" é puramente educacional e focado na excelência técnica.
+
+---
+
+## 📊 Panorama Detalhado
+
+Para uma análise profunda das decisões técnicas, componentes e arquitetura, consulte o nosso:
+👉 **[PANORAMA.md](./PANORAMA.md)**
+
+---
+
+<div align="center">
+  <sub>Construído com ❤️ por Renato Filho</sub>
+</div>
