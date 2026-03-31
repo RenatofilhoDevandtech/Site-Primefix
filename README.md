@@ -1,95 +1,124 @@
 <div align="center">
-  <img src="https://raw.githubusercontent.com/RenatofilhoDevandtech/RenatofilhoDevandtech/main/assets/primeflix-banner.png" alt="PrimeFlix Banner" width="100%" />
+  <h1>PRIMEFLIX <br/> <span style="font-weight: 300; font-size: 0.6em; color: #00f2fe;">A Nova Fronteira do Streaming</span></h1>
+ <img width="100%" style="border-radius: 12px; box-shadow: 0 10px 30px rgba(0,242,254,0.15);" src="https://github.com/user-attachments/assets/a0accbed-e005-4e94-a4f0-d2741c63f0c2" alt="PrimeFlix Banner" />
 
-  # 🎬 PRIMEFLIX: A Nova Fronteira do Streaming
-  
-  **Onde a Engenharia de Software encontra a Psicologia do Design.**
-  
   <br />
+  <br />
+  <p align="center">
+    <b>Onde a Engenharia de Software encontra a Psicologia do Design.</b>
+  </p>
 
-  [![React](https://img.shields.io/badge/React-18-61DAFB?style=for-the-badge&logo=react&logoColor=black)](https://react.dev/)
-  [![Vite](https://img.shields.io/badge/Vite-5.0-646CFF?style=for-the-badge&logo=vite&logoColor=white)](https://vitejs.dev/)
-  [![Tailwind](https://img.shields.io/badge/Tailwind-3.0-38B2AC?style=for-the-badge&logo=tailwind-css&logoColor=white)](https://tailwindcss.com/)
-  [![TMDB](https://img.shields.io/badge/TMDB-API-01B4E4?style=for-the-badge&logo=the-movie-database&logoColor=white)](https://www.themoviedb.org/)
+  <p align="center">
+    <a href="https://react.dev/"><img src="https://img.shields.io/badge/React_18-050505?style=for-the-badge&logo=react&logoColor=61DAFB" alt="React" /></a>
+    <a href="https://vitejs.dev/"><img src="https://img.shields.io/badge/Vite_5.0-050505?style=for-the-badge&logo=vite&logoColor=646CFF" alt="Vite" /></a>
+    <a href="https://tailwindcss.com/"><img src="https://img.shields.io/badge/Tailwind_3.0-050505?style=for-the-badge&logo=tailwind-css&logoColor=38B2AC" alt="Tailwind" /></a>
+    <a href="https://www.themoviedb.org/"><img src="https://img.shields.io/badge/TMDB_API-050505?style=for-the-badge&logo=the-movie-database&logoColor=01B4E4" alt="TMDB" /></a>
+  </p>
+
+  <br />
 
 </div>
 
 ---
 
-## 🌟 Visão e Filosofia: "Roube como um Artista"
+<div align="center">
+  <h3><img src="https://api.iconify.design/ph/lightbulb-filament-light.svg?color=%2300f2fe" width="32" align="center" /> <br/> Visão e Filosofia: "Roube como um Artista"</h3>
+  <p>O PrimeFlix não é uma cópia. É uma <b>evolução deliberada</b>.</p>
+</div>
 
-O PrimeFlix não é uma cópia. É uma **evolução deliberada**. 
+Baseado na metodologia do best-seller *"Roube como um Artista"* de Austin Kleon, a arquitetura e o design deste projeto nasceram da desconstrução analítica das melhores funcionalidades do **Netflix**, **Prime Video** e **Disney+**, sintetizando algo superior em termos de experiência cognitiva e UX:
 
-Baseado na metodologia do livro *"Roube como um Artista"* de Austin Kleon, analisamos as melhores funcionalidades do **Netflix**, **Prime Video** e **Disney+** para construir algo superior em termos de experiência de aprendizado e UX:
+* **🧠 Cerebral (O Padrão Netflix):** Arquitetura de informação baseada em modelos mentais pré-existentes. Curva de aprendizado zero para o usuário final.
+* **⚡ Veloz (A Eficiência Prime):** Abstração profunda de metadados e performance agressiva de carregamento.
+* **✨ Imersivo (A Magia Disney+):** Paleta de cores rigorosamente selecionada com base na psicologia do entretenimento profundo.
 
-- 🧠 **Cerebral (Netflix)**: Navegação baseada em padrões mentais pré-existentes do usuário.
-- ⚡ **Veloz (Prime Video)**: Abstração de metadados e performance de carregamento.
-- ✨ **Imersivo (Disney+)**: Paleta de cores baseada na psicologia do entretenimento profundo.
-
----
-
-## 🚀 Funcionalidades de Elite
-
-### 🌌 Interface Ultra-Premium
-Construída sobre o **Deep Black (#050505)** para eliminar distrações e o **Cyan Glow (#00f2fe)** para guiar o olhar sem esforço cognitivo.
-
-### 🌡️ UX Emocional (Weather Awareness)
-O sistema adapta sua saudação com base na sua localização e clima real. 
-> *"Chovendo aí? Melhor ficar em casa e assistir algo."* — O software entende o contexto do usuário.
-
-### 💨 Performance "Instant-Feel"
-- **Skeleton Screens**: Eliminação total do CLS (Cumulative Layout Shift).
-- **Preloading Inteligente**: Imagens e metadados carregados antes mesmo da sua intenção de clique.
-- **Screaming Architecture**: O código está organizado para ser escalável por décadas.
-
----
-
-## 🛠️ Stack Tecnológica
-
-- **Frontend**: React 18 (Hooks & Context API)
-- **Tooling**: Vite (para Builds em alta velocidade)
-- **Estilização**: Tailwind CSS (Abstração de Design System)
-- **API**: TMDB (The Movie Database) para dados em tempo real
-- **Workflow**: Git Flow + IA-Driven Development (AI como copiloto de aprendizado)
-
----
-
-## 📖 Como Rodar o Projeto
-
-1. Clone o repositório:
-   ```bash
-   git clone https://github.com/RenatofilhoDevandtech/Siteprime-video.git
-   ```
-2. Instale as dependências:
-   ```bash
-   npm install
-   ```
-3. Crie um arquivo `.env` na raiz e adicione sua chave TMDB:
-   ```env
-   VITE_TMDB_API_KEY=sua_chave_aqui
-   ```
-4. Inicie o servidor de desenvolvimento:
-   ```bash
-   npm run dev
-   ```
-
----
-
-## 📜 Licença e Ética
-
-Este projeto está sob a **[Licença MIT](./LICENSE)**. 
-
-**Nota Artística**: Os recursos visuais e a lógica de negócio foram inspirados na desconstrução criativa de plataformas existentes. O uso da metodologia "Roubo Criativo" é puramente educacional e focado na excelência técnica.
-
----
-
-## 📊 Panorama Detalhado
-
-Para uma análise profunda das decisões técnicas, componentes e arquitetura, consulte o nosso:
-👉 **[PANORAMA.md](./PANORAMA.md)**
-
----
+<br/>
+<hr/>
+<br/>
 
 <div align="center">
-  <sub>Construído com ❤️ por Renato Filho</sub>
+  <h3><img src="https://api.iconify.design/ph/sparkle-light.svg?color=%2300f2fe" width="32" align="center" /> <br/> Funcionalidades de Elite</h3>
+</div>
+
+* **🌌 Interface Ultra-Premium:** Construída sobre o abismo visual do **Deep Black (`#050505`)** para eliminar a fadiga ocular e aniquilar distrações, utilizando o **Cyan Glow (`#00f2fe`)** para guiar a atenção do usuário sem nenhum esforço cognitivo.
+* **🌡️ UX Emocional (Weather Awareness):** O sistema não é estático; ele sente. A plataforma adapta sua saudação e recomendações com base na localização e no clima real do usuário. 
+  > *"Chovendo aí? Melhor ficar em casa e assistir algo."* — O software lê o contexto, criando um vínculo quase humano.
+* **💨 Performance "Instant-Feel":**
+  * *Skeleton Screens:* Eliminação cirúrgica do CLS (Cumulative Layout Shift).
+  * *Preloading Inteligente:* Imagens e metadados são injetados no cache antes mesmo da intenção de clique se concretizar.
+  * *Screaming Architecture:* Organização de diretórios e código projetada para ser lida e escalada por décadas.
+
+<br/>
+<hr/>
+<br/>
+
+<div align="center">
+  <h3><img src="https://api.iconify.design/ph/stack-light.svg?color=%2300f2fe" width="32" align="center" /> <br/> Stack Tecnológica</h3>
+</div>
+
+| Camada | Tecnologia / Estratégia |
+| :--- | :--- |
+| **Frontend Core** | React 18 (Hooks Avançados & Context API) |
+| **Build Tooling** | Vite (HMR e Builds em hipervelocidade) |
+| **Design System** | Tailwind CSS (Abstração e escalabilidade de UI) |
+| **Data Engine** | TMDB (The Movie Database API para dados *real-time*) |
+| **Engenharia** | Git Flow + IA-Driven Development (IA como copiloto) |
+
+<br/>
+<hr/>
+<br/>
+
+<div align="center">
+  <h3><img src="https://api.iconify.design/ph/terminal-window-light.svg?color=%2300f2fe" width="32" align="center" /> <br/> Deploy e Execução</h3>
+</div>
+
+```bash
+# 1. Clone o repositório
+git clone [https://github.com/RenatofilhoDevandtech/Siteprime-video.git](https://github.com/RenatofilhoDevandtech/Siteprime-video.git)
+
+# 2. Instale as dependências da aplicação
+npm install
+
+# 3. Configure o ambiente (crie um arquivo .env na raiz)
+VITE_TMDB_API_KEY=sua_chave_aqui
+
+# 4. Inicie o servidor em ambiente de desenvolvimento
+npm run dev
+```
+---
+
+### <img src="https://api.iconify.design/ph/scales-light.svg?color=%2300f2fe" width="28" align="center" /> Licença e Ética
+Este projeto opera sob a **[Licença MIT](./LICENSE)**. 
+
+> **Nota Artística:** Os recursos visuais e a lógica de negócio foram inspirados na desconstrução criativa de plataformas de streaming multimilionárias. O uso da metodologia "Roubo Criativo" é estritamente educacional, focado na demonstração de senioridade e excelência técnica.
+
+<br/>
+
+### <img src="https://api.iconify.design/ph/magnifying-glass-light.svg?color=%2300f2fe" width="28" align="center" /> Panorama Detalhado
+Para Headhunters, CTOs e Tech Leads buscando uma análise profunda das decisões arquiteturais e design patterns adotados, acesse a documentação técnica: 👉 **[PANORAMA.md](./PANORAMA.md)**
+
+<br/>
+<hr/>
+<br/>
+
+<div align="center">
+  <img src="https://api.iconify.design/ph/signature-light.svg?color=%2300f2fe" width="40" align="center" />
+  <h2>A Mente por Trás do Código</h2>
+  
+  <br/>
+
+  <table>
+    <tr>
+      <td align="center">
+        <b>Renato Filho</b><br>
+        <i>Fullstack Software Engineer | AI Architect | UI/UX Specialist</i>
+      </td>
+    </tr>
+    <tr>
+      <td align="center">
+        <a href="https://www.linkedin.com/in/renato-filho-devandtech"><img src="https://api.iconify.design/ph/linkedin-logo-light.svg?color=%2300f2fe" width="32" align="center" alt="LinkedIn"></a> &nbsp; &nbsp; &nbsp;
+        <a href="https://renatofilhodev.github.io"><img src="https://api.iconify.design/ph/globe-light.svg?color=%2300f2fe" width="32" align="center" alt="Portfolio"></a>
+      </td>
+    </tr>
+  </table>
 </div>
